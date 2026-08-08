@@ -201,6 +201,11 @@
                                     <a class="nav-link" href="{{ route('common_expenses.index') }}"><i
                                             class="bi bi-cash-stack me-1"></i> Finanzas</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('reports.index') }}">
+                                        <i class="bi bi-file-earmark-bar-graph me-1"></i> Reportes
+                                    </a>
+                                </li>
                             @endif
 
                             <!-- ENLACES SOLO PARA RESIDENTES -->

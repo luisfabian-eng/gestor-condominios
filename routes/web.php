@@ -35,4 +35,6 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(funct
     Route::resource('common_expenses', CommonExpenseController::class);
     Route::patch('common_expenses/{id}/pay', [CommonExpenseController::class, 'markAsPaid'])->name('common_expenses.pay');
     Route::get('/reportes/unidades/pdf', [ReportController::class, 'downloadUnitsPdf'])->name('reports.units.pdf');
+    Route::get('/reportes/generador', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/reportes/generar-pdf', [ReportController::class, 'generateCustomPdf'])->name('reports.generate.pdf');
 });
