@@ -7,6 +7,7 @@ use App\Http\Controllers\CondominiumController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\CommonExpenseController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,4 +34,5 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(funct
     Route::resource('residents', ResidentController::class);
     Route::resource('common_expenses', CommonExpenseController::class);
     Route::patch('common_expenses/{id}/pay', [CommonExpenseController::class, 'markAsPaid'])->name('common_expenses.pay');
+    Route::get('/reportes/unidades/pdf', [ReportController::class, 'downloadUnitsPdf'])->name('reports.units.pdf');
 });
