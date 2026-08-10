@@ -7,9 +7,96 @@ use App\Models\Unit;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Resident;
 use App\Models\Condominium;
+use App\Models\CommonExpense;
 
 class ReportController extends Controller
 {
+    // Menú principal de reportes
+    public function menu()
+    {
+        return view('reports.menu');
+    }
+
+    // Formulario para seleccionar Residente y Año
+    public function residentAnnualForm()
+    {
+        $residents = Resident::with(['unit', 'unit.condominium'])->orderBy('name')->get();
+        $years = CommonExpense::select('year')->distinct()->orderBy('year', 'desc')->pluck('year');
+
+        if ($years->isEmpty()) {
+            $years = collect([date('Y')]);
+        }
+
+        return view('reports.resident-annual-form', compact('residents', 'years'));
+    }
+
+    // Generar PDF del Reporte Anual
+    public function generateResidentAnnualPdf(Request $request)
+    {
+        $request->validate([
+            'resident_id' => 'required|exists:residents,id',
+            'year'        => 'required|integer',
+        ]);
+
+        $resident = Resident::with(['unit.condominium'])->findOrFail($request->resident_id);
+        $year = $request->year;
+
+        // Gastos del departamento de ese residente para el año especificado
+        $expenses = CommonExpense::where('unit_id', $resident->unit_id)
+            ->where('year', $year)
+            ->get();
+
+        // Mapeo ordenado de los 12 meses
+        $months = [
+            'Enero',
+            'Febrero',
+            'Marzo',
+            'Abril',
+            'Mayo',
+            'Junio',
+            'Julio',
+            'Agosto',
+            'Septiembre',
+            'Octubre',
+            'Noviembre',
+            'Diciembre'
+        ];
+
+        $monthlyData = [];
+        $totalPaid = 0;
+        $totalPending = 0;
+
+        foreach ($months as $month) {
+            $record = $expenses->firstWhere('month', $month);
+
+            $amount = $record ? $record->amount : 0;
+            $status = $record ? $record->status : 'No emitido';
+            $paidDate = ($record && $status === 'Pagado') ? $record->updated_at->format('d/m/Y') : '-';
+
+            if ($status === 'Pagado') {
+                $totalPaid += $amount;
+            } elseif ($status === 'Pendiente') {
+                $totalPending += $amount;
+            }
+
+            $monthlyData[] = [
+                'month'     => $month,
+                'amount'    => $amount,
+                'status'    => $status,
+                'paid_date' => $paidDate,
+            ];
+        }
+
+        $pdf = PDF::loadView('reports.resident-annual-pdf', compact(
+            'resident',
+            'year',
+            'monthlyData',
+            'totalPaid',
+            'totalPending'
+        ))->setPaper('a4', 'portrait');
+
+        return $pdf->download('reporte-anual-' . $resident->name . '-' . $year . '.pdf');
+    }
 
     public function index()
     {

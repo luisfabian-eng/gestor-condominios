@@ -168,9 +168,6 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                    <img src="{{ asset('images/condominio_reverse.png') }}" alt="Logo CondoGest" style="height: 35px; width: auto;" class="me-2">
-                    <span class="fw-bolder" style="color: #1B2A47; letter-spacing: -0.5px;">Gestor de condominios</span>
                 </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
@@ -204,7 +201,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('reports.index') }}">
+                                    <a class="nav-link" href="{{ route('reports.menu') }}">
                                         <i class="bi bi-file-earmark-bar-graph me-1"></i> Reportes
                                     </a>
                                 </li>
