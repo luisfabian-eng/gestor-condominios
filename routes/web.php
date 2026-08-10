@@ -49,4 +49,11 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(funct
     // Reporte Anual por Residente
     Route::get('/reportes/residentes-anual', [ReportController::class, 'residentAnnualForm'])->name('reports.resident.annual.form');
     Route::post('/reportes/residentes-anual/pdf', [ReportController::class, 'generateResidentAnnualPdf'])->name('reports.resident.annual.pdf');
+
+    // Descarga directa del reporte de tickets
+    Route::get('/reportes/tickets/pdf', [ReportController::class, 'downloadTicketsPdf'])->name('reports.tickets.pdf');
+
+    // Formulario de filtro de tickets desde el menú (por estado y fecha)
+    Route::get('/reportes/tickets', [ReportController::class, 'ticketsReportForm'])->name('reports.tickets.form');
+    Route::post('/reportes/tickets/filtrado/pdf', [ReportController::class, 'generateFilteredTicketsPdf'])->name('reports.tickets.filtered.pdf');
 });

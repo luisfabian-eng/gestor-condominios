@@ -7,9 +7,14 @@
                 <h2 class="fw-bold mb-0 text-dark">Historial de Incidencias</h2>
                 <p class="text-muted mt-1">Gestión completa de mantenciones y requerimientos</p>
             </div>
-            <a href="{{ route('tickets.create') }}" class="btn btn-primary px-4">
-                <i class="bi bi-plus-lg me-1"></i> Nuevo Ticket
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('reports.tickets.pdf') }}" class="btn btn-outline-danger px-3">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Descargar PDF
+                </a>
+                <a href="{{ route('tickets.create') }}" class="btn btn-primary px-4">
+                    <i class="bi bi-plus-lg me-1"></i> Nuevo Ticket
+                </a>
+            </div>
         </div>
 
         <div class="card shadow-sm border-0 rounded-4">
@@ -61,13 +66,11 @@
                                     </td>
                                     <td class="pe-3 text-end">
                                         <div class="d-inline-flex gap-1">
-                                            <!-- Ver detalle -->
                                             <a href="{{ route('tickets.show', $ticket->id) }}"
                                                 class="btn btn-sm btn-outline-primary" title="Ver detalle">
                                                 <i class="bi bi-eye"></i>
                                             </a>
 
-                                            <!-- Cambiar a "En progreso" -->
                                             @if ($ticket->status != 'En progreso')
                                                 <form action="{{ route('tickets.update', $ticket->id) }}" method="POST"
                                                     class="m-0">
@@ -81,7 +84,6 @@
                                                 </form>
                                             @endif
 
-                                            <!-- Cambiar a "Resuelto" -->
                                             @if ($ticket->status != 'Resuelto')
                                                 <form action="{{ route('tickets.update', $ticket->id) }}" method="POST"
                                                     class="m-0">

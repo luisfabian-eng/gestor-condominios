@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Resident;
 use App\Models\Condominium;
 use App\Models\CommonExpense;
+use App\Models\Ticket;
 
 class ReportController extends Controller
 {
@@ -157,5 +158,55 @@ class ReportController extends Controller
 
         // Descarga directa del archivo
         return $pdf->download('reporte-unidades-' . date('Ymd_His') . '.pdf');
+    }
+
+    // Descarga directa de todas las incidencias (usado desde el botón de la vista de tickets)
+    public function downloadTicketsPdf()
+    {
+        $tickets = Ticket::with('user')->latest()->get();
+
+        $pdf = PDF::loadView('reports.tickets-pdf', [
+            'tickets' => $tickets,
+            'title'   => 'Reporte General de Incidencias y Mantenimiento'
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('reporte-incidencias-' . date('Ymd_His') . '.pdf');
+    }
+
+    // Formulario de reportes de tickets desde el menú
+    public function ticketsReportForm()
+    {
+        return view('reports.tickets-form');
+    }
+
+    // Generar PDF de tickets con filtros (estado / rango de fechas)
+    public function generateFilteredTicketsPdf(Request $request)
+    {
+        $query = Ticket::with('user');
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('urgency')) {
+            $query->where('urgency', $request->urgency);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $tickets = $query->latest()->get();
+
+        $pdf = PDF::loadView('reports.tickets-pdf', [
+            'tickets' => $tickets,
+            'title'   => 'Reporte Filtrado de Incidencias'
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('reporte-incidencias-filtrado-' . date('Ymd_His') . '.pdf');
     }
 }

@@ -12,8 +12,30 @@
                 </div>
 
                 <div class="row g-4">
-                    <!-- Reporte Anual de Pagos -->
-                    <div class="col-md-6">
+                    <!-- 1. Reporte de Incidencias / Mantenimiento -->
+                    <div class="col-md-4">
+                        <div class="card h-100 p-3">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="badge bg-warning-subtle text-warning p-3 rounded-circle mb-3">
+                                        <i class="bi bi-tools fs-3"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-dark">Incidencias y Mantenciones</h5>
+                                    <p class="text-muted small">
+                                        Informe de tickets de soporte generados, filtrados por estado (Abierto, En progreso,
+                                        Resuelto) y fecha.
+                                    </p>
+                                </div>
+                                <a href="{{ route('reports.tickets.form') }}"
+                                    class="btn btn-outline-warning text-dark w-100 mt-3">
+                                    <i class="bi bi-filter-square me-1"></i> Configurar Filtros
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Reporte Anual de Pagos -->
+                    <div class="col-md-4">
                         <div class="card h-100 p-3">
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <div>
@@ -22,8 +44,8 @@
                                     </div>
                                     <h5 class="fw-bold text-dark">Estado Anual por Residente</h5>
                                     <p class="text-muted small">
-                                        Genera un estado de cuenta anual para un residente en particular, con el detalle de
-                                        cobros mes a mes, montos pagados y saldos pendientes.
+                                        Cartola anual con el desglose mensual de gastos comunes, montos pagados y saldos
+                                        pendientes.
                                     </p>
                                 </div>
                                 <a href="{{ route('reports.resident.annual.form') }}"
@@ -34,18 +56,18 @@
                         </div>
                     </div>
 
-                    <!-- Generador Universal -->
-                    <div class="col-md-6">
+                    <!-- 3. Generador Universal -->
+                    <div class="col-md-4">
                         <div class="card h-100 p-3">
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <div>
-                                    <div class="badge bg-indigo-subtle text-indigo p-3 rounded-circle mb-3">
+                                    <div class="badge bg-secondary-subtle text-secondary p-3 rounded-circle mb-3">
                                         <i class="bi bi-sliders2-vertical fs-3"></i>
                                     </div>
-                                    <h5 class="fw-bold text-dark">Generador Dinámico / Universal</h5>
+                                    <h5 class="fw-bold text-dark">Generador Dinámico</h5>
                                     <p class="text-muted small">
-                                        Selecciona cualquier módulo (Unidades, Residentes o Comunidades), filtra por
-                                        edificio y marca exactamente qué columnas quieres exportar.
+                                        Exporta listados generales de comunidades, departamentos o residentes eligiendo las
+                                        columnas exactas.
                                     </p>
                                 </div>
                                 <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary w-100 mt-3">
