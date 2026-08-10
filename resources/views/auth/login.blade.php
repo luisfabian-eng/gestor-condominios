@@ -57,6 +57,16 @@
                             </button>
                         </div>
                     </form>
+
+                    <!-- Logo inferior de adorno -->
+<div class="text-center mt-5 mb-2">
+    <img src="{{ asset('images/condominio_reverse.png') }}" 
+         alt="Logo CondoGest" 
+         class="img-fluid" 
+         style="max-height: 70px; opacity: 0.6; filter: grayscale(100%); transition: all 0.3s ease;"
+         onmouseover="this.style.opacity='1'; this.style.filter='grayscale(0%)'"
+         onmouseout="this.style.opacity='0.6'; this.style.filter='grayscale(100%)'">
+</div>
                 </div>
             </div>
         </div>
