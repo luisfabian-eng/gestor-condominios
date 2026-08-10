@@ -85,7 +85,7 @@
 
         .navbar-brand span {
             font-weight: 700;
-            color: var(--heading-color) !important; /* Reemplaza el azul fijo por variable */
+            color: var(--heading-color) !important;
             font-size: 1.5rem;
             letter-spacing: -0.5px;
         }
@@ -237,8 +237,10 @@
         <nav class="navbar navbar-expand-md shadow-sm">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                    <!-- Logo: Puedes tener uno claro y otro oscuro si quisieras, pero dejamos el actual -->
-                    <img src="{{ asset('images/condominio_reverse.png') }}" alt="Logo CondoGest" style="height: 35px; width: auto;" class="me-2">
+                    <!-- Logo con estilo de App Icon -->
+                    <img src="{{ asset('images/condominio_reverse.png') }}" alt="Logo CondoGest" 
+                         style="height: 38px; width: auto; background-color: #ffffff; padding: 4px; border-radius: 8px;" 
+                         class="me-2 shadow-sm">
                     <span>Gestor de condominios</span>
                 </a>
 
