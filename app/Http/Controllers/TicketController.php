@@ -10,9 +10,7 @@ class TicketController extends Controller
     // Mostrar todas las incidencias (Historial completo)
     public function index()
     {
-        // Traemos todos los tickets ordenados por el más reciente, de 10 en 10
-        $tickets = Ticket::orderBy('created_at', 'desc')->paginate(10);
-        
+        $tickets = Ticket::with('user')->get();
         return view('tickets.index', compact('tickets'));
     }
 
@@ -30,13 +28,14 @@ class TicketController extends Controller
         ]);
 
         Ticket::create([
-            'title' => $request->title,
+            'user_id'  => auth()->id(), // <-- Asigna el usuario actual
+            'title'    => $request->title,
             'location' => $request->location,
-            'urgency' => $request->urgency,
-            'status' => 'Abierto'
+            'urgency'  => $request->urgency,
+            'status'   => 'Abierto',
         ]);
 
-        return redirect()->route('home')->with('success', '¡Incidencia registrada correctamente!');
+        return redirect()->route('tickets.index')->with('status', 'Ticket creado correctamente.');
     }
 
     // Mostrar la pantalla de detalle de un ticket específico

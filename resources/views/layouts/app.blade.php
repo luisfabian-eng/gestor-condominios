@@ -13,7 +13,8 @@
     <!-- Fonts y Tipografía Moderna (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -52,8 +53,39 @@
             transition: color 0.3s ease;
         }
 
-        .nav-link:hover {
+        .nav-link:hover,
+        .nav-link.show {
             color: #4f46e5 !important;
+        }
+
+        .dropdown-menu {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            padding: 8px;
+        }
+
+        .dropdown-item {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #475569;
+            border-radius: 8px;
+            padding: 8px 14px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f5f9;
+            color: #4f46e5;
+        }
+
+        .dropdown-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            padding: 6px 14px 2px;
         }
 
         .card {
@@ -168,9 +200,12 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
+                <a class="navbar-brand" href="{{ url('/') }}">
+                    <i class="bi bi-buildings-fill me-2"></i>Gestor de condominios
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -178,38 +213,76 @@
                     <!-- Menú principal -->
                     <ul class="navbar-nav me-auto ps-4">
                         @auth
-                            <!-- ENLACES SOLO PARA ADMINISTRADORES -->
+                            <!-- MENÚS AGRUPADOS PARA ADMINISTRADORES -->
                             @if (Auth::user()->role === 'admin')
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('condominiums.index') }}">
-                                        <i class="bi bi-building me-1"></i> Comunidades
+                                <!-- 1. Gestión & Residentes -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-building-gear me-1"></i> Administración
                                     </a>
+                                    <ul class="dropdown-menu shadow-sm" aria-labelledby="adminDropdown">
+                                        <li>
+                                            <h6 class="dropdown-header">Comunidad y Espacios</h6>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('condominiums.index') }}">
+                                                <i class="bi bi-building me-2 text-primary"></i> Comunidades
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('units.index') }}">
+                                                <i class="bi bi-door-open me-2 text-primary"></i> Unidades / Deptos
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider my-1">
+                                        </li>
+                                        <li>
+                                            <h6 class="dropdown-header">Personas</h6>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('residents.index') }}">
+                                                <i class="bi bi-people-fill me-2 text-primary"></i> Directorio de Residentes
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('units.index') }}">
-                                        <i class="bi bi-door-open me-1"></i> Unidades
+
+                                <!-- 2. Finanzas & Reportes -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="financeDropdown" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-wallet2 me-1"></i> Finanzas & Reportes
                                     </a>
+                                    <ul class="dropdown-menu shadow-sm" aria-labelledby="financeDropdown">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('common_expenses.index') }}">
+                                                <i class="bi bi-cash-stack me-2 text-success"></i> Gastos Comunes
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('reports.menu') }}">
+                                                <i class="bi bi-file-earmark-bar-graph me-2 text-danger"></i> Centro de
+                                                Reportes
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('residents.index') }}">
-                                        <i class="bi bi-people-fill me-1"></i> Residentes
+
+                                <!-- 3. Mantenimiento & Soporte -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="maintenanceDropdown"
+                                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-wrench-adjustable-circle me-1"></i> Mantenimiento
                                     </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('common_expenses.index') }}">
-                                        <i class="bi bi-cash-stack me-1"></i> Finanzas
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('reports.menu') }}">
-                                        <i class="bi bi-file-earmark-bar-graph me-1"></i> Reportes
-                                    </a>
-                                </li>
-                                <!-- NUEVO ENLACE DE INCIDENCIAS -->
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('tickets.index') }}">
-                                        <i class="bi bi-tools me-1"></i> Incidencias
-                                    </a>
+                                    <ul class="dropdown-menu shadow-sm" aria-labelledby="maintenanceDropdown">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('tickets.index') }}">
+                                                <i class="bi bi-tools me-2 text-warning"></i> Incidencias / Tickets
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             @endif
 
@@ -234,14 +307,17 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                                    data-bs-toggle="dropdown">
                                     <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <i class="bi bi-box-arrow-right me-2 text-danger"></i> Cerrar Sesión
                                     </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        class="d-none">
                                         @csrf
                                     </form>
                                 </div>

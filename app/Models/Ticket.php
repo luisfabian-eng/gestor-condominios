@@ -9,6 +9,16 @@ class Ticket extends Model
 {
     use HasFactory;
 
-    // Le decimos a Laravel qué campos se pueden llenar en el formulario
-    protected $fillable = ['title', 'location', 'urgency', 'status'];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'location',
+        'urgency',
+        'status',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

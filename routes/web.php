@@ -10,6 +10,7 @@ use App\Http\Controllers\CommonExpenseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TicketController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
