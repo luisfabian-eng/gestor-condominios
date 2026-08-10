@@ -13,8 +13,7 @@
     <!-- Fonts y Tipografía Moderna (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -169,14 +168,12 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-<a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-    <img src="{{ asset('images/condominio_reverse.png') }}" alt="Logo CondoGest" style="height: 35px; width: auto;" class="me-2">
-    <!-- Aplicamos un estilo directo para que coincida con el azul oscuro del logo -->
-    <span class="fw-bolder" style="color: #1B2A47; letter-spacing: -0.5px;">Gestor de condominios</span>
-</a>
+                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+                    <img src="{{ asset('images/condominio_reverse.png') }}" alt="Logo CondoGest" style="height: 35px; width: auto;" class="me-2">
+                    <span class="fw-bolder" style="color: #1B2A47; letter-spacing: -0.5px;">Gestor de condominios</span>
+                </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -187,24 +184,34 @@
                             <!-- ENLACES SOLO PARA ADMINISTRADORES -->
                             @if (Auth::user()->role === 'admin')
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('condominiums.index') }}"><i
-                                            class="bi bi-building me-1"></i> Comunidades</a>
+                                    <a class="nav-link" href="{{ route('condominiums.index') }}">
+                                        <i class="bi bi-building me-1"></i> Comunidades
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('units.index') }}"><i
-                                            class="bi bi-door-open me-1"></i> Unidades</a>
+                                    <a class="nav-link" href="{{ route('units.index') }}">
+                                        <i class="bi bi-door-open me-1"></i> Unidades
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('residents.index') }}"><i
-                                            class="bi bi-people-fill me-1"></i> Residentes</a>
+                                    <a class="nav-link" href="{{ route('residents.index') }}">
+                                        <i class="bi bi-people-fill me-1"></i> Residentes
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('common_expenses.index') }}"><i
-                                            class="bi bi-cash-stack me-1"></i> Finanzas</a>
+                                    <a class="nav-link" href="{{ route('common_expenses.index') }}">
+                                        <i class="bi bi-cash-stack me-1"></i> Finanzas
+                                    </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('reports.index') }}">
                                         <i class="bi bi-file-earmark-bar-graph me-1"></i> Reportes
+                                    </a>
+                                </li>
+                                <!-- NUEVO ENLACE DE INCIDENCIAS -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('tickets.index') }}">
+                                        <i class="bi bi-tools me-1"></i> Incidencias
                                     </a>
                                 </li>
                             @endif
@@ -212,8 +219,9 @@
                             <!-- ENLACES SOLO PARA RESIDENTES -->
                             @if (Auth::user()->role === 'residente')
                                 <li class="nav-item">
-                                    <a class="nav-link fw-bold text-primary" href="{{ route('home') }}"><i
-                                            class="bi bi-house-door-fill me-1"></i> Mi Departamento</a>
+                                    <a class="nav-link fw-bold text-primary" href="{{ route('home') }}">
+                                        <i class="bi bi-house-door-fill me-1"></i> Mi Departamento
+                                    </a>
                                 </li>
                             @endif
                         @endauth
@@ -223,22 +231,22 @@
                     <ul class="navbar-nav ms-auto">
                         @guest
                             @if (Route::has('register'))
-                                <li class="nav-item"><a class="nav-link"
-                                        href="{{ route('register') }}">{{ __('Register') }}</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                </li>
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                                    data-bs-toggle="dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                     <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf</form>
+                                        @csrf
+                                    </form>
                                 </div>
                             </li>
                         @endguest

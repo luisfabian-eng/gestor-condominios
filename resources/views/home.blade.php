@@ -120,7 +120,36 @@
                                         @endif
                                     </td>
                                     <td class="pe-4 text-end">
-                                        <button class="btn btn-sm btn-outline-secondary">Ver detalle</button>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Gestionar
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                                <!-- Botón para ir a la pantalla de detalle -->
+                                                <li><a class="dropdown-item fw-bold text-primary" href="{{ route('tickets.show', $ticket->id) }}"><i class="bi bi-eye me-2"></i> Ver detalle completo</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                
+                                                <!-- Botón rápido: En Progreso -->
+                                                <li>
+                                                    <form action="{{ route('tickets.update', $ticket->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="status" value="En progreso">
+                                                        <button type="submit" class="dropdown-item"><i class="bi bi-tools me-2 text-warning"></i> Marcar "En progreso"</button>
+                                                    </form>
+                                                </li>
+                                                
+                                                <!-- Botón rápido: Resuelto -->
+                                                <li>
+                                                    <form action="{{ route('tickets.update', $ticket->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="status" value="Resuelto">
+                                                        <button type="submit" class="dropdown-item"><i class="bi bi-check-circle-fill me-2 text-success"></i> Marcar "Resuelto"</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
