@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Condominium;
 use App\Models\Unit;
 use App\Models\CommonExpense;
+use App\Models\Ticket;
 
 class HomeController extends Controller
 {
@@ -20,7 +21,7 @@ class HomeController extends Controller
         if (auth()->user()->role === 'residente') {
             $resident = auth()->user()->resident; 
             
-            // AQUÍ ESTÁ LA SOLUCIÓN AL ERROR: Buscamos sus gastos comunes
+            // Buscamos sus gastos comunes
             $expenses = collect(); // Creamos una colección vacía por defecto
             if ($resident && $resident->unit_id) {
                 // Si tiene departamento, buscamos sus cobros ordenados por fecha
@@ -40,6 +41,10 @@ class HomeController extends Controller
         $pendingAmount = CommonExpense::where('status', 'Pendiente')->sum('amount');
         $paidAmount = CommonExpense::where('status', 'Pagado')->sum('amount');
 
-        return view('home', compact('totalCondominiums', 'totalUnits', 'pendingAmount', 'paidAmount'));
+        // BUSCAMOS LOS ÚLTIMOS 5 TICKETS CREADOS
+        $tickets = Ticket::orderBy('created_at', 'desc')->take(5)->get();
+
+        // Agregamos 'tickets' al compact para enviarlo a la vista
+        return view('home', compact('totalCondominiums', 'totalUnits', 'pendingAmount', 'paidAmount', 'tickets'));
     }
 }

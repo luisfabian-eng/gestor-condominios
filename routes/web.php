@@ -8,6 +8,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\CommonExpenseController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TicketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,4 +38,5 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(funct
     Route::get('/reportes/unidades/pdf', [ReportController::class, 'downloadUnitsPdf'])->name('reports.units.pdf');
     Route::get('/reportes/generador', [ReportController::class, 'index'])->name('reports.index');
     Route::post('/reportes/generar-pdf', [ReportController::class, 'generateCustomPdf'])->name('reports.generate.pdf');
+    Route::resource('tickets', TicketController::class);
 });

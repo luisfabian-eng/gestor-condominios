@@ -47,9 +47,17 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="amount" class="form-label">Monto a Cobrar ($)</label>
-                            <input type="number" class="form-control" id="amount" name="amount" placeholder="Ej: 45000" required>
+                        <!-- SECCIÓN DEL MONTO ACTUALIZADA CON EL VALOR POR DEFECTO -->
+                        <div class="mb-4">
+                            <label for="amount" class="form-label fw-bold">Monto a Cobrar ($)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">$</span>
+                                <input type="number" class="form-control form-control-lg text-end" id="amount" name="amount" value="{{ old('amount', 60000) }}" required>
+                            </div>
+                            <div class="form-text text-primary mt-2">
+                                <i class="bi bi-info-circle-fill me-1"></i>
+                                El monto base es de $60.000. Puedes borrarlo y escribir otro valor si el residente tiene multas o arrastra deudas de meses anteriores.
+                            </div>
                         </div>
 
                         <div class="mb-3">

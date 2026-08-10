@@ -67,5 +67,76 @@
             </div>
         </div>
     </div>
+
+    <!-- MÓDULO DE INCIDENCIAS Y MANTENCIONES -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-bottom pb-3 pt-4 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                    <span class="fw-bold fs-5" style="color: #1B2A47;">
+                        <i class="bi bi-tools me-2 text-secondary"></i>Mantenciones e Incidencias
+                    </span>
+                    <a href="{{ route('tickets.create') }}" class="btn btn-primary btn-sm px-3 py-2">
+                        <i class="bi bi-plus-lg me-1"></i> Nuevo Ticket
+                    </a>
+                </div>
+                
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-nowrap">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4 py-3">Descripción del Problema</th>
+                                    <th>Urgencia</th>
+                                    <th>Estado</th>
+                                    <th class="pe-4 text-end">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($tickets as $ticket)
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <div class="fw-bold text-dark">{{ $ticket->title }}</div>
+                                        <div class="small text-muted mt-1">
+                                            <i class="bi bi-geo-alt me-1"></i> {{ $ticket->location ?? 'Sin ubicación específica' }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($ticket->urgency == 'Alta')
+                                            <span class="badge bg-danger px-2 py-1">Alta</span>
+                                        @elseif($ticket->urgency == 'Media')
+                                            <span class="badge bg-warning text-dark px-2 py-1">Media</span>
+                                        @else
+                                            <span class="badge bg-info text-dark px-2 py-1">Baja</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($ticket->status == 'Abierto')
+                                            <span class="badge bg-danger px-2 py-1">Abierto</span>
+                                        @elseif($ticket->status == 'En progreso')
+                                            <span class="badge bg-warning text-dark px-2 py-1">En progreso</span>
+                                        @else
+                                            <span class="badge bg-success px-2 py-1">Resuelto</span>
+                                        @endif
+                                    </td>
+                                    <td class="pe-4 text-end">
+                                        <button class="btn btn-sm btn-outline-secondary">Ver detalle</button>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-5">
+                                        <i class="bi bi-check2-circle fs-1 d-block mb-2 text-success"></i>
+                                        No hay incidencias registradas. ¡Todo está en orden!
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
