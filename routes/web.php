@@ -48,6 +48,8 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(funct
 
     // Menú centralizado de reportes
     Route::get('/reportes', [ReportController::class, 'menu'])->name('reports.menu');
+    Route::get('/reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
+    Route::get('/reports/payments/pdf', [ReportController::class, 'exportPdf'])->name('reports.payments.pdf');
 
     // Generador de reportes existente
     Route::get('/reportes/generador', [ReportController::class, 'index'])->name('reports.index');

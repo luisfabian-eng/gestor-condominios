@@ -3,18 +3,41 @@
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-10">
+            <div class="col-md-11">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h3 class="fw-bold text-dark mb-1">Centro de Reportes</h3>
-                        <p class="text-muted mb-0">Selecciona el tipo de informe que deseas exportar en formato PDF</p>
+                        <p class="text-muted mb-0">Selecciona el tipo de informe que deseas visualizar o exportar en formato
+                            PDF</p>
                     </div>
                 </div>
 
                 <div class="row g-4">
-                    <!-- 1. Reporte de Incidencias / Mantenimiento -->
-                    <div class="col-md-4">
-                        <div class="card h-100 p-3">
+                    <!-- 1. Reporte de Recaudación y Morosidad (NUEVO) -->
+                    <div class="col-md-3">
+                        <div class="card h-100 p-2 border-0 shadow-sm rounded-4">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="badge bg-success-subtle text-success p-3 rounded-circle mb-3">
+                                        <i class="bi bi-cash-stack fs-3"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-dark">Recaudación y Morosidad</h5>
+                                    <p class="text-muted small">
+                                        Estado mensual de cobros pagados vs pendientes con totales financieros y opción de
+                                        impresión.
+                                    </p>
+                                </div>
+                                <a href="{{ route('reports.payments') }}"
+                                    class="btn btn-outline-success w-100 mt-3 rounded-3">
+                                    <i class="bi bi-eye me-1"></i> Ver Reporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Reporte de Incidencias / Mantenimiento -->
+                    <div class="col-md-3">
+                        <div class="card h-100 p-2 border-0 shadow-sm rounded-4">
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <div>
                                     <div class="badge bg-warning-subtle text-warning p-3 rounded-circle mb-3">
@@ -27,16 +50,16 @@
                                     </p>
                                 </div>
                                 <a href="{{ route('reports.tickets.form') }}"
-                                    class="btn btn-outline-warning text-dark w-100 mt-3">
+                                    class="btn btn-outline-warning text-dark w-100 mt-3 rounded-3">
                                     <i class="bi bi-filter-square me-1"></i> Configurar Filtros
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 2. Reporte Anual de Pagos -->
-                    <div class="col-md-4">
-                        <div class="card h-100 p-3">
+                    <!-- 3. Reporte Anual de Pagos -->
+                    <div class="col-md-3">
+                        <div class="card h-100 p-2 border-0 shadow-sm rounded-4">
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <div>
                                     <div class="badge bg-primary-subtle text-primary p-3 rounded-circle mb-3">
@@ -49,16 +72,16 @@
                                     </p>
                                 </div>
                                 <a href="{{ route('reports.resident.annual.form') }}"
-                                    class="btn btn-outline-primary w-100 mt-3">
+                                    class="btn btn-outline-primary w-100 mt-3 rounded-3">
                                     <i class="bi bi-file-earmark-person me-1"></i> Configurar Reporte
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 3. Generador Universal -->
-                    <div class="col-md-4">
-                        <div class="card h-100 p-3">
+                    <!-- 4. Generador Universal -->
+                    <div class="col-md-3">
+                        <div class="card h-100 p-2 border-0 shadow-sm rounded-4">
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <div>
                                     <div class="badge bg-secondary-subtle text-secondary p-3 rounded-circle mb-3">
@@ -70,12 +93,14 @@
                                         columnas exactas.
                                     </p>
                                 </div>
-                                <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary w-100 mt-3">
+                                <a href="{{ route('reports.index') }}"
+                                    class="btn btn-outline-secondary w-100 mt-3 rounded-3">
                                     <i class="bi bi-gear-wide-connected me-1"></i> Generador Dinámico
                                 </a>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

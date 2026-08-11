@@ -209,4 +209,70 @@ class ReportController extends Controller
 
         return $pdf->download('reporte-incidencias-filtrado-' . date('Ymd_His') . '.pdf');
     }
+
+    public function payments(Request $request)
+    {
+        // 1. Obtener lista de años disponibles para el filtro
+        $availableYears = CommonExpense::select('year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        // Periodo seleccionado (por defecto el actual)
+        $selectedYear = $request->get('year', date('Y'));
+        $selectedMonth = $request->get('month', 'Agosto');
+
+        // 2. Consulta filtrada por año y mes con sus relaciones
+        $expenses = CommonExpense::with(['unit.condominium', 'unit.resident'])
+            ->where('year', $selectedYear)
+            ->where('month', $selectedMonth)
+            ->get();
+
+        // 3. Separación de colecciones: Pagados vs Pendientes (No Pagados)
+        $paidExpenses    = $expenses->where('status', 'Pagado');
+        $pendingExpenses = $expenses->where('status', 'Pendiente');
+
+        // Totalizadores
+        $totalPaidAmount    = $paidExpenses->sum('amount');
+        $totalPendingAmount = $pendingExpenses->sum('amount');
+
+        return view('reports.payments', compact(
+            'availableYears',
+            'selectedYear',
+            'selectedMonth',
+            'paidExpenses',
+            'pendingExpenses',
+            'totalPaidAmount',
+            'totalPendingAmount'
+        ));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $selectedYear = $request->get('year', date('Y'));
+        $selectedMonth = $request->get('month', 'Agosto');
+
+        $expenses = CommonExpense::with(['unit.condominium', 'unit.resident'])
+            ->where('year', $selectedYear)
+            ->where('month', $selectedMonth)
+            ->get();
+
+        $paidExpenses    = $expenses->where('status', 'Pagado');
+        $pendingExpenses = $expenses->where('status', 'Pendiente');
+
+        $totalPaidAmount    = $paidExpenses->sum('amount');
+        $totalPendingAmount = $pendingExpenses->sum('amount');
+
+        // Carga una vista Blade optimizada exclusivamente para el PDF
+        $pdf = Pdf::loadView('reports.pdf_payments', compact(
+            'selectedYear',
+            'selectedMonth',
+            'paidExpenses',
+            'pendingExpenses',
+            'totalPaidAmount',
+            'totalPendingAmount'
+        ))->setPaper('a4', 'portrait');
+
+        return $pdf->download("Reporte_Pagos_{$selectedMonth}_{$selectedYear}.pdf");
+    }
 }
