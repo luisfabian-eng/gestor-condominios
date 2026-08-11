@@ -19,7 +19,7 @@
             </div>
         @endif
 
-        <!-- FILTROS SUTILES -->
+        <!-- FILTROS POR AÑO Y MES -->
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-3 p-md-4">
                 <form method="GET" action="{{ route('common_expenses.index') }}" class="row g-3 align-items-center">
@@ -73,9 +73,8 @@
             </div>
         </div>
 
-        <!-- TABLA DE RESULTADOS CON RESUMEN MINIMALISTA AL COSTADO -->
+        <!-- TABLA DE RESULTADOS CON RESUMEN LATERAL DISCRETO -->
         <div class="card border-0 shadow-sm rounded-4">
-            <!-- HEADER CON RESUMEN DISCRETO (CONTEOS Y TOTALES YUXTAPUESTOS) -->
             <div
                 class="card-header bg-white py-3 px-4 border-bottom-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
@@ -83,12 +82,11 @@
                     <span class="text-muted small">Periodo seleccionado: {{ $selectedMonth }} {{ $selectedYear }}</span>
                 </div>
 
-                <!-- RESUMEN DISCRETO A UN COSTADO -->
+                <!-- RESUMEN EN PILLS DISCRETAS -->
                 <div class="d-flex flex-wrap align-items-center gap-2">
-                    <!-- Pendientes -->
                     <div
-                        class="d-flex align-items-center bg-danger bg-opacity-10 border border-danger-subtle text-danger px-3 py-1-5 rounded-3">
-                        <i class="bi bi-clock-history me-2"></i>
+                        class="d-flex align-items-center bg-danger bg-opacity-10 border border-danger-subtle text-danger px-3 py-2 rounded-3">
+                        <i class="bi bi-clock-history me-2 fs-5"></i>
                         <div class="lh-1">
                             <span class="d-block fw-bold small">{{ $pendingCount }} Pendientes</span>
                             <span class="small opacity-75" style="font-size: 0.75rem;">$
@@ -96,10 +94,9 @@
                         </div>
                     </div>
 
-                    <!-- Pagados -->
                     <div
-                        class="d-flex align-items-center bg-success bg-opacity-10 border border-success-subtle text-success px-3 py-1-5 rounded-3">
-                        <i class="bi bi-check-circle me-2"></i>
+                        class="d-flex align-items-center bg-success bg-opacity-10 border border-success-subtle text-success px-3 py-2 rounded-3">
+                        <i class="bi bi-check-circle me-2 fs-5"></i>
                         <div class="lh-1">
                             <span class="d-block fw-bold small">{{ $paidCount }} Pagados</span>
                             <span class="small opacity-75" style="font-size: 0.75rem;">$
@@ -115,6 +112,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-3 py-3">Residente y Unidad</th>
+                                <th>Motivo / Concepto</th>
                                 <th>Periodo</th>
                                 <th>Monto</th>
                                 <th>Vencimiento</th>
@@ -145,6 +143,10 @@
                                             @endif
                                         </div>
                                     </td>
+                                    <td>
+                                        <span
+                                            class="fw-semibold text-dark">{{ $expense->concept ?? 'Gasto Común Ordinario' }}</span>
+                                    </td>
                                     <td>{{ $expense->month }} {{ $expense->year }}</td>
                                     <td class="fw-bold text-dark">$ {{ number_format($expense->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($expense->due_date)->format('d-m-Y') }}</td>
@@ -158,11 +160,12 @@
                                     <td class="pe-3 text-end">
                                         <div class="d-inline-flex gap-1">
                                             @if ($expense->status == 'Pendiente')
+                                                <!-- ACCIÓN PAGAR FUNCIONAL -->
                                                 <form action="{{ route('common_expenses.update', $expense->id) }}"
                                                     method="POST" class="m-0">
                                                     @csrf
                                                     @method('PUT')
-                                                    <input type="hidden" name="status" value="Pagado">
+                                                    <input type="hidden" name="payment_action" value="1">
                                                     <button type="submit" class="btn btn-sm btn-success"
                                                         title="Marcar como Pagado">
                                                         <i class="bi bi-check-lg me-1"></i> Pagar

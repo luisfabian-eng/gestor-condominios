@@ -18,6 +18,7 @@
                             <input type="hidden" name="month" id="bulk_month" value="Agosto">
                             <input type="hidden" name="year" id="bulk_year" value="2026">
                             <input type="hidden" name="amount" id="bulk_amount" value="60000">
+                            <input type="hidden" name="concept" id="bulk_concept" value="Gasto Común Ordinario">
                             <input type="hidden" name="due_date" id="bulk_due_date" value="">
 
                             <button type="submit" class="btn btn-primary btn-sm px-3">
@@ -45,6 +46,15 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </div>
+
+                            <!-- Motivo / Concepto del Cobro -->
+                            <div class="mb-3">
+                                <label for="concept" class="form-label fw-bold">Motivo / Concepto del Cobro</label>
+                                <input type="text" class="form-control" id="concept" name="concept"
+                                    value="{{ old('concept', 'Gasto Común Ordinario') }}"
+                                    placeholder="Ej: Gasto Común Ordinario, Fondo de Reserva, Multa por ruidos molestos"
+                                    required>
                             </div>
 
                             <div class="row mb-3">
@@ -93,7 +103,8 @@
                             </div>
 
                             <div class="d-flex justify-content-end gap-2 mt-4">
-                                <a href="{{ route('common_expenses.index') }}" class="btn btn-secondary px-4">Cancelar</a>
+                                <a href="{{ route('common_expenses.index') }}"
+                                    class="btn btn-secondary px-4">Cancelar</a>
                                 <button type="submit" class="btn btn-success px-4">
                                     <i class="bi bi-check-lg me-1"></i> Emitir Cobro
                                 </button>
@@ -112,11 +123,13 @@
             const monthSelect = document.getElementById('month');
             const yearInput = document.getElementById('year');
             const amountInput = document.getElementById('amount');
+            const conceptInput = document.getElementById('concept');
             const dueDateInput = document.getElementById('due_date');
 
             const bulkMonth = document.getElementById('bulk_month');
             const bulkYear = document.getElementById('bulk_year');
             const bulkAmount = document.getElementById('bulk_amount');
+            const bulkConcept = document.getElementById('bulk_concept');
             const bulkDueDate = document.getElementById('bulk_due_date');
 
             // Sincronizar los campos del formulario individual con el formulario masivo
@@ -124,12 +137,14 @@
                 bulkMonth.value = monthSelect.value;
                 bulkYear.value = yearInput.value;
                 bulkAmount.value = amountInput.value;
+                bulkConcept.value = conceptInput.value;
                 bulkDueDate.value = dueDateInput.value;
             }
 
             monthSelect.addEventListener('change', syncBulkInputs);
             yearInput.addEventListener('input', syncBulkInputs);
             amountInput.addEventListener('input', syncBulkInputs);
+            conceptInput.addEventListener('input', syncBulkInputs);
             dueDateInput.addEventListener('change', syncBulkInputs);
 
             // Inicializar sincronización

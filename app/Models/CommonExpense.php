@@ -9,17 +9,16 @@ class CommonExpense extends Model
 {
     use HasFactory;
 
-    // Campos que permitimos llenar desde el formulario
     protected $fillable = [
         'unit_id',
         'month',
         'year',
         'amount',
+        'concept',
+        'due_date',
         'status',
-        'due_date'
     ];
 
-    // Relación: Este gasto pertenece a una unidad
     public function unit()
     {
         return $this->belongsTo(Unit::class);

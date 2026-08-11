@@ -55,14 +55,23 @@ class CommonExpenseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'unit_id' => 'required|exists:units,id',
-            'month' => 'required|string|max:20',
-            'year' => 'required|integer|min:2020',
-            'amount' => 'required|numeric|min:0',
+            'unit_id'  => 'required|exists:units,id',
+            'month'    => 'required|string|max:20',
+            'year'     => 'required|integer|min:2020',
+            'amount'   => 'required|numeric|min:0',
+            'concept'  => 'nullable|string|max:255',
             'due_date' => 'required|date',
         ]);
 
-        CommonExpense::create($request->all());
+        CommonExpense::create([
+            'unit_id'  => $request->unit_id,
+            'month'    => $request->month,
+            'year'     => $request->year,
+            'amount'   => $request->amount,
+            'concept'  => $request->concept ?? 'Gasto Común Ordinario',
+            'due_date' => $request->due_date,
+            'status'   => 'Pendiente',
+        ]);
 
         return redirect()->route('common_expenses.index')
             ->with('status', '¡Cobro registrado exitosamente!');
@@ -86,15 +95,24 @@ class CommonExpenseController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $expense = CommonExpense::findOrFail($id);
+
+        // Si la petición proviene del botón rápido "Pagar" desde la tabla
+        if ($request->has('payment_action')) {
+            $expense->update(['status' => 'Pagado']);
+            return redirect()->back()->with('status', '¡El gasto común fue marcado como PAGADO correctamente!');
+        }
+
+        // Validación normal si se guarda desde la vista de edición
         $request->validate([
-            'unit_id' => 'required|exists:units,id',
-            'month' => 'required|string|max:20',
-            'year' => 'required|integer|min:2020',
-            'amount' => 'required|numeric|min:0',
+            'unit_id'  => 'required|exists:units,id',
+            'month'    => 'required|string|max:20',
+            'year'     => 'required|integer|min:2020',
+            'amount'   => 'required|numeric|min:0',
+            'concept'  => 'nullable|string|max:255',
             'due_date' => 'required|date',
         ]);
 
-        $expense = CommonExpense::findOrFail($id);
         $expense->update($request->all());
 
         return redirect()->route('common_expenses.index')
@@ -116,6 +134,7 @@ class CommonExpenseController extends Controller
             'month'    => 'required|string',
             'year'     => 'required|integer',
             'amount'   => 'required|numeric|min:0',
+            'concept'  => 'nullable|string|max:255',
             'due_date' => 'required|date',
         ]);
 
@@ -127,6 +146,7 @@ class CommonExpenseController extends Controller
                 'month'    => $request->month,
                 'year'     => $request->year,
                 'amount'   => $request->amount,
+                'concept'  => $request->concept ?? 'Gasto Común Ordinario',
                 'due_date' => $request->due_date,
                 'status'   => 'Pendiente',
             ]);
