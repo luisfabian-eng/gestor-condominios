@@ -205,20 +205,41 @@
             background-color: transparent !important;
         }
 
-        /* Ajustes para DataTables y buscador */
-        .dt-container .dt-search input, .dt-container .dt-length select {
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
+        /* --- CORRECCIÓN DATATABLES BLINDADA --- */
+        
+        /* 1. Buscador global */
+        .dt-container .dt-search input,
+        div.dataTables_filter input {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+            padding: 6px 16px !important;
         }
 
-        /* CORRECCIÓN: Textos informativos y paginación de la tabla visibles en modo oscuro */
+        /* 2. Selector de Registros (El rebelde "10") */
+        .dt-container .dt-length select,
+        div.dataTables_length select {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+            padding-top: 6px !important;
+            padding-bottom: 6px !important;
+            padding-left: 15px !important;
+            padding-right: 35px !important; /* Espacio ancho para la flecha */
+            min-width: 85px !important;
+            width: auto !important;
+            background-position: right 10px center !important;
+        }
+
+        /* 3. Textos informativos y paginación en modo oscuro */
         .dt-container, 
         .dt-container label, 
         .dt-info, 
         .dt-paging-button,
+        div.dataTables_wrapper,
+        div.dataTables_info,
         div.dt-container .dt-paging .dt-paging-button.disabled {
             color: var(--text-muted) !important;
         }
@@ -246,7 +267,6 @@
         <nav class="navbar navbar-expand-md shadow-sm">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                    <!-- Logo restaurado al estilo App Icon para que funcione con fondos blancos -->
                     <img src="{{ asset('images/condominio_reverse.png') }}" alt="Logo CondoGest" 
                          style="height: 38px; width: auto; background-color: #ffffff; padding: 4px; border-radius: 8px;" 
                          class="me-2 shadow-sm">
