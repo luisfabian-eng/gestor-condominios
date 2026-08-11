@@ -214,6 +214,15 @@
             padding: 6px 12px;
         }
 
+        /* CORRECCIÓN: Textos informativos y paginación de la tabla visibles en modo oscuro */
+        .dt-container, 
+        .dt-container label, 
+        .dt-info, 
+        .dt-paging-button,
+        div.dt-container .dt-paging .dt-paging-button.disabled {
+            color: var(--text-muted) !important;
+        }
+
         /* Botón de alternar tema */
         #theme-toggle {
             cursor: pointer;
@@ -237,7 +246,7 @@
         <nav class="navbar navbar-expand-md shadow-sm">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                    <!-- Logo con estilo de App Icon -->
+                    <!-- Logo restaurado al estilo App Icon para que funcione con fondos blancos -->
                     <img src="{{ asset('images/condominio_reverse.png') }}" alt="Logo CondoGest" 
                          style="height: 38px; width: auto; background-color: #ffffff; padding: 4px; border-radius: 8px;" 
                          class="me-2 shadow-sm">

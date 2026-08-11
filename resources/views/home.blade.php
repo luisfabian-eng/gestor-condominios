@@ -89,7 +89,7 @@
                 <div class="card shadow-sm border-0 rounded-4">
                     <div
                         class="card-header bg-white border-bottom pb-3 pt-4 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-                        <span class="fw-bold fs-5" style="color: #1B2A47;">
+                        <span class="fw-bold fs-5 text-dark">
                             <i class="bi bi-tools me-2 text-secondary"></i>Mantenciones e Incidencias
                         </span>
                         <a href="{{ route('tickets.create') }}" class="btn btn-primary btn-sm px-3 py-2">
