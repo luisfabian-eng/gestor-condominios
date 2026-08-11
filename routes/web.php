@@ -29,6 +29,7 @@ Auth::routes();
 
 // Ruta del dashboard al iniciar sesión (El HomeController decide a dónde enviarte)
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::post('/portal/tickets', [HomeController::class, 'storeTicket'])->name('portal.tickets.store');
 
 // RUTAS PROTEGIDAS SOLO PARA ADMINISTRADORES
 // Aquí agregamos el guardia "CheckAdmin" para bloquear a los residentes curiosos
