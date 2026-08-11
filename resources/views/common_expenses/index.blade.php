@@ -22,7 +22,8 @@
         <!-- FILTROS POR AÑO Y MES -->
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-3 p-md-4">
-                <form method="GET" action="{{ route('common_expenses.index') }}" class="row g-3 align-items-center">
+                <!-- Se cambió align-items-center por align-items-end para alinear el botón abajo -->
+                <form method="GET" action="{{ route('common_expenses.index') }}" class="row g-3 align-items-end">
 
                     <div class="col-md-5">
                         <label for="year" class="form-label fw-bold small text-muted mb-1">AÑO</label>
@@ -64,7 +65,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-2 d-flex align-items-end mt-3 mt-md-0">
+                    <div class="col-md-2">
                         <button type="submit" class="btn btn-outline-primary w-100">
                             <i class="bi bi-funnel me-1"></i> Filtrar
                         </button>
