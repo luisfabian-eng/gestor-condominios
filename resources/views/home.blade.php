@@ -103,6 +103,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-3 py-3">Descripción del Problema</th>
+                                        <th>Reportado Por</th>
                                         <th>Urgencia</th>
                                         <th>Estado</th>
                                         <th class="pe-3 text-end">Acción</th>
@@ -117,6 +118,12 @@
                                                     <i class="bi bi-geo-alt me-1"></i>
                                                     {{ $ticket->location ?? 'Sin ubicación específica' }}
                                                 </div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-dark">
+                                                    <i class="bi bi-person-circle me-1 text-primary"></i>
+                                                    {{ $ticket->user->name ?? 'Anónimo' }}
+                                                </span>
                                             </td>
                                             <td>
                                                 @if ($ticket->urgency == 'Alta')

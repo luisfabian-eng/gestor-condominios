@@ -9,6 +9,8 @@ use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\CommonExpenseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UserController;
+
 
 
 /*
@@ -38,6 +40,9 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(funct
     Route::patch('common_expenses/{id}/pay', [CommonExpenseController::class, 'markAsPaid'])->name('common_expenses.pay');
     Route::get('/reportes/unidades/pdf', [ReportController::class, 'downloadUnitsPdf'])->name('reports.units.pdf');
     Route::resource('tickets', TicketController::class);
+
+    // Rutas para la gestión de usuarios
+    Route::resource('users', UserController::class);
 
     // Menú centralizado de reportes
     Route::get('/reportes', [ReportController::class, 'menu'])->name('reports.menu');
