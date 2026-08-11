@@ -336,7 +336,7 @@
                                     <ul class="dropdown-menu shadow-sm">
                                         <li><a class="dropdown-item" href="{{ route('common_expenses.index') }}"><i
                                                     class="bi bi-cash-stack me-2 text-success"></i> Gastos Comunes</a></li>
-                                        <li><a class="dropdown-item" href="{{ route('reports.index') }}"><i
+                                        <li><a class="dropdown-item" href="{{ route('reports.menu') }}"><i
                                                     class="bi bi-file-earmark-bar-graph me-2 text-danger"></i> Centro de
                                                 Reportes</a></li>
                                     </ul>
