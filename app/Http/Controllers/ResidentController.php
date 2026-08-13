@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Resident;
 use App\Models\Unit;
-use App\Models\User; 
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash; 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str; // <-- AGREGAMOS ESTA HERRAMIENTA DE LARAVEL
 
 class ResidentController extends Controller
@@ -47,12 +47,12 @@ class ResidentController extends Controller
             'email' => $resident->email,
             'password' => Hash::make($securePassword),
             'role' => 'residente',
-            'resident_id' => $resident->id, 
+            'resident_id' => $resident->id,
         ]);
 
         // 5. Devolvemos la clave en el mensaje de éxito para que el administrador la copie
         return redirect()->route('residents.index')
-                         ->with('status', '¡Cuenta creada! La contraseña temporal del residente es: ' . $securePassword);
+            ->with('status', '¡Cuenta creada! La contraseña temporal del residente es: ' . $securePassword);
     }
 
     public function edit(string $id)
@@ -76,17 +76,17 @@ class ResidentController extends Controller
         $resident->update($request->all());
 
         return redirect()->route('residents.index')
-                         ->with('status', '¡Datos del residente actualizados!');
+            ->with('status', '¡Datos del residente actualizados!');
     }
 
     public function destroy(string $id)
     {
         $resident = Resident::findOrFail($id);
-        
+
         User::where('resident_id', $resident->id)->delete();
         $resident->delete();
 
         return redirect()->route('residents.index')
-                         ->with('status', '¡Residente y cuenta eliminados correctamente!');
+            ->with('status', '¡Residente y cuenta eliminados correctamente!');
     }
 }
