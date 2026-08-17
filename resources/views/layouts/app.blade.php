@@ -7,6 +7,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Gestor de condominios | Panel de Control</title>
 
+    <!-- Script anti-parpadeo: Revisa el tema antes de cargar la página -->
+    <script>
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ?
+            'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+
     <!-- Scripts Base -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
@@ -25,57 +32,153 @@
     <!-- Styles base de Laravel -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
-    <!-- ESTILOS PERSONALIZADOS -->
+    <!-- ESTILOS PERSONALIZADOS CON VARIABLES DE MODO OSCURO -->
     <style>
+        /* Variables Globales (Modo Claro por defecto) */
+        :root {
+            --bg-color: #f4f7fb;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --heading-color: #1e293b;
+            --navbar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: #f1f5f9;
+            --hover-bg: #f1f5f9;
+            --table-border: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.03);
+            --shadow-hover: rgba(0, 0, 0, 0.07);
+        }
+
+        /* Variables Modo Oscuro */
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --text-main: #cbd5e1;
+            --text-muted: #94a3b8;
+            --heading-color: #f8fafc;
+            --navbar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --hover-bg: #334155;
+            --table-border: #334155;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --shadow-hover: rgba(0, 0, 0, 0.5);
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f4f7fb;
-            color: #334155;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Adaptaciones de colores Bootstrap al tema */
+        .bg-white {
+            background-color: var(--card-bg) !important;
+        }
+
+        .text-dark {
+            color: var(--heading-color) !important;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: var(--heading-color);
         }
 
         .navbar {
-            background-color: #ffffff !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+            background-color: var(--navbar-bg) !important;
+            box-shadow: 0 4px 20px var(--shadow-color) !important;
             padding: 15px 0;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        .navbar-brand {
+        .navbar-brand span {
             font-weight: 700;
-            color: #4f46e5 !important;
+            color: var(--heading-color) !important;
             font-size: 1.5rem;
             letter-spacing: -0.5px;
         }
 
-        .nav-link {
-            font-weight: 500 !important;
-            color: #64748b !important;
-            transition: color 0.3s ease;
+        .navbar-nav {
+            align-items: center;
         }
 
-        .nav-link:hover {
+        .nav-link {
+            font-weight: 500 !important;
+            color: var(--text-muted) !important;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover,
+        .nav-link.show {
             color: #4f46e5 !important;
         }
 
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            padding: 8px;
+        }
+
+        .dropdown-item {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 8px 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--hover-bg);
+            color: #4f46e5;
+        }
+
+        .dropdown-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 6px 14px 2px;
+        }
+
         .card {
+            background-color: var(--card-bg);
             border: none;
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
             overflow: hidden;
         }
 
         .card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
+            box-shadow: 0 15px 35px var(--shadow-hover);
         }
 
         .card-header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #f1f5f9;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
             padding: 20px 25px;
             font-size: 1.1rem;
-            color: #1e293b;
+            color: var(--heading-color);
         }
 
         .btn {
@@ -99,66 +202,74 @@
 
         .table {
             vertical-align: middle;
+            color: var(--text-main);
         }
 
         .table thead th {
-            border-bottom: 2px solid #e2e8f0;
-            color: #64748b;
+            border-bottom: 2px solid var(--table-border);
+            color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.8rem;
             letter-spacing: 0.8px;
             padding-bottom: 15px;
+            background-color: transparent !important;
         }
 
-        .table tbody td {
+        .table tbody td,
+        .table tbody tr {
             padding: 15px 10px;
-            color: #475569;
-            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color);
+            background-color: transparent !important;
         }
 
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 500;
+        /* --- CORRECCIÓN DATATABLES --- */
+        .dt-container .dt-search input,
+        div.dataTables_filter input {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+            padding: 6px 16px !important;
         }
 
-        /* Ajustes visuales para DataTables */
-        .dt-container .dt-search input {
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            padding: 6px 12px;
-            font-size: 0.9rem;
-        }
-
-        /* Corrección de padding y ancho para el selector de registros */
         .dt-container .dt-length select,
-        .dataTables_length select {
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            padding: 5px 32px 5px 12px !important;
-            min-width: 75px;
-            font-size: 0.9rem;
+        div.dataTables_length select {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+            padding-top: 6px !important;
+            padding-bottom: 6px !important;
+            padding-left: 15px !important;
+            padding-right: 35px !important;
+            min-width: 85px !important;
+            width: auto !important;
+            background-position: right 10px center !important;
+        }
+
+        .dt-container,
+        .dt-container label,
+        .dt-info,
+        .dt-paging-button,
+        div.dataTables_wrapper,
+        div.dataTables_info,
+        div.dt-container .dt-paging .dt-paging-button.disabled {
+            color: var(--text-muted) !important;
+        }
+
+        #theme-toggle {
             cursor: pointer;
-            background-position: right 0.6rem center !important;
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            padding: 0;
+            margin-right: 15px;
         }
 
-        .dt-container .dt-length label,
-        .dataTables_length label {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .page-item.active .page-link {
-            background-color: #4f46e5 !important;
-            border-color: #4f46e5 !important;
-        }
-
-        .page-link {
-            color: #4f46e5;
-            border-radius: 6px !important;
-            margin: 0 2px;
+        #theme-toggle i {
+            transition: color 0.3s ease;
         }
     </style>
 
@@ -167,13 +278,15 @@
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md shadow-sm">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
                     <img src="{{ asset('images/condominio_reverse.png') }}" alt="Logo CondoGest"
-                        style="height: 35px; width: auto;" class="me-2">
-                    Gestor de condominios
+                        style="height: 38px; width: auto; background-color: #ffffff; padding: 4px; border-radius: 8px;"
+                        class="me-2 shadow-sm">
+                    <span>Gestor de condominios</span>
                 </a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
@@ -183,56 +296,107 @@
                     <!-- Menú principal -->
                     <ul class="navbar-nav me-auto ps-4">
                         @auth
-                            <!-- ENLACES SOLO PARA ADMINISTRADORES -->
                             @if (Auth::user()->role === 'admin')
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('condominiums.index') }}"><i
-                                            class="bi bi-building me-1"></i> Comunidades</a>
+                                <!-- 1. Administración -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-building-gear"></i> Administración
+                                    </a>
+                                    <ul class="dropdown-menu shadow-sm">
+                                        <li>
+                                            <h6 class="dropdown-header">Comunidad y Espacios</h6>
+                                        </li>
+                                        <li><a class="dropdown-item" href="{{ route('condominiums.index') }}"><i
+                                                    class="bi bi-building me-2 text-primary"></i> Comunidades</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('units.index') }}"><i
+                                                    class="bi bi-door-open me-2 text-primary"></i> Unidades / Deptos</a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider my-1">
+                                        </li>
+                                        <li>
+                                            <h6 class="dropdown-header">Personas y Acceso</h6>
+                                        </li>
+                                        <li><a class="dropdown-item" href="{{ route('residents.index') }}"><i
+                                                    class="bi bi-people-fill me-2 text-primary"></i> Directorio de
+                                                Residentes</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('users.index') }}"><i
+                                                    class="bi bi-person-gear me-2 text-primary"></i> Usuarios / Cuentas</a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('units.index') }}"><i
-                                            class="bi bi-door-open me-1"></i> Unidades</a>
+
+                                <!-- 2. Finanzas & Reportes -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="financeDropdown" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-wallet2"></i> Finanzas & Reportes
+                                    </a>
+                                    <ul class="dropdown-menu shadow-sm">
+                                        <li><a class="dropdown-item" href="{{ route('common_expenses.index') }}"><i
+                                                    class="bi bi-cash-stack me-2 text-success"></i> Gastos Comunes</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('reports.menu') }}"><i
+                                                    class="bi bi-file-earmark-bar-graph me-2 text-danger"></i> Centro de
+                                                Reportes</a></li>
+                                    </ul>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('residents.index') }}"><i
-                                            class="bi bi-people-fill me-1"></i> Residentes</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('common_expenses.index') }}"><i
-                                            class="bi bi-cash-stack me-1"></i> Finanzas</a>
+
+                                <!-- 3. Mantenimiento -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="maintenanceDropdown"
+                                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-wrench-adjustable-circle"></i> Mantenimiento
+                                    </a>
+                                    <ul class="dropdown-menu shadow-sm">
+                                        <li><a class="dropdown-item" href="{{ route('tickets.index') }}"><i
+                                                    class="bi bi-tools me-2 text-warning"></i> Incidencias / Tickets</a>
+                                        </li>
+                                    </ul>
                                 </li>
                             @endif
 
-                            <!-- ENLACES SOLO PARA RESIDENTES -->
                             @if (Auth::user()->role === 'residente')
                                 <li class="nav-item">
-                                    <a class="nav-link fw-bold text-primary" href="{{ route('home') }}"><i
-                                            class="bi bi-house-door-fill me-1"></i> Mi Departamento</a>
+                                    <a class="nav-link fw-bold text-primary" href="{{ route('home') }}">
+                                        <i class="bi bi-house-door-fill"></i> Mi Departamento
+                                    </a>
                                 </li>
                             @endif
                         @endauth
                     </ul>
 
-                    <!-- Perfil -->
+                    <!-- Perfil y Tema -->
                     <ul class="navbar-nav ms-auto">
+                        <!-- BOTÓN MODO OSCURO/CLARO -->
+                        <li
+                            class="nav-item border-end pe-3 me-2 border-secondary border-opacity-25 d-none d-md-flex align-items-center">
+                            <button id="theme-toggle" class="nav-link" title="Alternar modo claro/oscuro">
+                                <i class="bi bi-moon-stars-fill" id="theme-icon"></i>
+                            </button>
+                        </li>
+
                         @guest
                             @if (Route::has('register'))
-                                <li class="nav-item"><a class="nav-link"
-                                        href="{{ route('register') }}">{{ __('Register') }}</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                </li>
                             @endif
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                     data-bs-toggle="dropdown">
-                                    <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
+                                    <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                                        <i class="bi bi-box-arrow-right me-2 text-danger"></i> Cerrar Sesión
                                     </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf</form>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        class="d-none">
+                                        @csrf
+                                    </form>
                                 </div>
                             </li>
                         @endguest
@@ -251,10 +415,10 @@
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
 
-    <!-- Inicializador Genérico de DataTables -->
+    <!-- Script de Inicialización y Tema -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializa cualquier tabla con el id="datatable" o la clase class="datatable"
+            // DataTables
             $('#datatable, .datatable').each(function() {
                 if (!$.fn.DataTable.isDataTable(this)) {
                     new DataTable(this, {
@@ -265,6 +429,32 @@
                         responsive: true
                     });
                 }
+            });
+
+            // Lógica del botón de Modo Oscuro
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+
+            function updateIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+                    themeIcon.style.color = '#fbbf24';
+                } else {
+                    themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+                    themeIcon.style.color = '';
+                }
+            }
+
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            updateIcon(currentTheme);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const newTheme = isDark ? 'light' : 'dark';
+
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateIcon(newTheme);
             });
         });
     </script>

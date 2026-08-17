@@ -5,22 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CommonExpense extends Model
+class Ticket extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'unit_id',
-        'month',
-        'year',
-        'amount',
-        'concept',
-        'due_date',
+        'user_id',
+        'title',
+        'location',
+        'urgency',
         'status',
     ];
 
-    public function unit()
+    public function user()
     {
-        return $this->belongsTo(Unit::class);
+        return $this->belongsTo(User::class);
     }
 }
