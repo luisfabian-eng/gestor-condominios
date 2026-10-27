@@ -65,7 +65,8 @@
                                             <div>
                                                 <strong>Depto {{ $user->resident->unit->number }}</strong>
                                                 @if ($user->resident->unit->tower)
-                                                    <span class="badge bg-light text-dark border ms-1">Torre
+                                                    <!-- CORRECCIÓN APLICADA AQUÍ -->
+                                                    <span class="badge bg-secondary text-white ms-1">Torre
                                                         {{ $user->resident->unit->tower }}</span>
                                                 @endif
                                             </div>

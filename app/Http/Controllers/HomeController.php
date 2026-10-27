@@ -12,6 +12,7 @@ class HomeController extends Controller
 {
     public function __construct()
     {
+        // Protegemos el controlador, pero permitimos las peticiones del portal del residente
         $this->middleware('auth');
     }
 
@@ -73,24 +74,30 @@ class HomeController extends Controller
     }
 
     public function uploadPayment(Request $request, $id)
-{
-    // Validamos que suba un archivo válido (Imagen o PDF, máx 2MB)
-    $request->validate([
-        'receipt' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-    ]);
-
-    $expense = \App\Models\CommonExpense::findOrFail($id);
-
-    // Guardamos el archivo y actualizamos el estado
-    if ($request->hasFile('receipt')) {
-        $path = $request->file('receipt')->store('receipts', 'public');
-
-        $expense->update([
-            'receipt_path' => $path,
-            'status' => 'En revisión' // Cambia el estado para que el admin lo revise
+    {
+        // Validamos que suba un archivo válido (Imagen o PDF, máx 2MB)
+        $request->validate([
+            'receipt' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
-    }
 
-    return redirect()->route('home')->with('status', '¡Comprobante enviado! El administrador lo revisará pronto.');
-}
+        $expense = CommonExpense::findOrFail($id);
+        $resident = auth()->user()->resident;
+
+        // MEDIDA DE SEGURIDAD: Validar que el gasto común pertenezca a la unidad del residente logueado
+        if (!$resident || $expense->unit_id !== $resident->unit_id) {
+            abort(403, 'No estás autorizado para realizar esta acción.');
+        }
+
+        // Guardamos el archivo y actualizamos el estado
+        if ($request->hasFile('receipt')) {
+            $path = $request->file('receipt')->store('receipts', 'public');
+
+            $expense->update([
+                'receipt_path' => $path,
+                'status'       => 'En revisión' // Cambia el estado para que el admin lo revise
+            ]);
+        }
+
+        return redirect()->route('home')->with('status', '¡Comprobante enviado! El administrador lo revisará pronto.');
+    }
 }

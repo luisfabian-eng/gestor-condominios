@@ -100,27 +100,41 @@
                                             <td class="ps-3 fw-bold text-dark">{{ $expense->month }} {{ $expense->year }}
                                             </td>
                                             <td class="text-muted">
-                                                {{ \Carbon\Carbon::parse($expense->due_date)->format('d-m-Y') }}</td>
+                                                {{ \Carbon\Carbon::parse($expense->due_date)->format('d-m-Y') }}
+                                            </td>
                                             <td class="fw-bold fs-6">$ {{ number_format($expense->amount, 0, ',', '.') }}
                                             </td>
                                             
-                                            <!-- ESTADOS ACTUALIZADOS (INCLUYE "EN REVISIÓN") -->
+                                            <!-- ESTADOS Y NOTA DE RECHAZO SI EXISTE -->
                                             <td>
                                                 @if ($expense->status == 'Pendiente')
-                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">Por Pagar</span>
+                                                    @if ($expense->rejection_note)
+                                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">
+                                                            <i class="bi bi-exclamation-circle me-1"></i> Rechazado (Reenviar)
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">Por Pagar</span>
+                                                    @endif
                                                 @elseif ($expense->status == 'En revisión')
                                                     <span class="badge bg-warning-subtle text-warning px-3 py-2 rounded-pill border border-warning-subtle">
-                                                        <i class="bi bi-hourglass-split"></i> En Revisión
+                                                        <i class="bi bi-hourglass-split me-1"></i> En Revisión
                                                     </span>
                                                 @else
                                                     <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">Pagado</span>
                                                 @endif
+
+                                                <!-- ALERTA SI FUE RECHAZADO -->
+                                                @if ($expense->rejection_note && $expense->status != 'Pagado')
+                                                    <div class="alert alert-danger p-2 small mt-2 mb-0 rounded-3 text-wrap" style="max-width: 280px;">
+                                                        <i class="bi bi-exclamation-octagon-fill me-1"></i> <strong>Motivo:</strong> {{ $expense->rejection_note }}
+                                                    </div>
+                                                @endif
                                             </td>
                                             
-                                            <!-- ACCIÓN ACTUALIZADA (SOLO EL BOTÓN CON ETIQUETAS BS5) -->
+                                            <!-- ACCIÓN ACTUALIZADA -->
                                             <td class="pe-3 text-end">
                                                 @if ($expense->status == 'Pendiente')
-                                                    <!-- Botón que abre el Modal -->
+                                                    <!-- Botón que abre el Modal de Pago -->
                                                     <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#payModal{{ $expense->id }}">
                                                         <i class="bi bi-credit-card me-1"></i> Pagar
                                                     </button>
@@ -195,24 +209,18 @@
                                                 @if ($ticket->urgency == 'Alta')
                                                     <span class="badge bg-danger px-3 py-1 rounded-pill">Alta</span>
                                                 @elseif($ticket->urgency == 'Media')
-                                                    <span
-                                                        class="badge bg-warning text-dark px-3 py-1 rounded-pill">Media</span>
+                                                    <span class="badge bg-warning text-dark px-3 py-1 rounded-pill">Media</span>
                                                 @else
-                                                    <span
-                                                        class="badge bg-info text-dark px-3 py-1 rounded-pill">Baja</span>
+                                                    <span class="badge bg-info text-dark px-3 py-1 rounded-pill">Baja</span>
                                                 @endif
                                             </td>
                                             <td class="pe-3">
                                                 @if ($ticket->status == 'Abierto')
-                                                    <span
-                                                        class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill">Abierto</span>
+                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill">Abierto</span>
                                                 @elseif($ticket->status == 'En progreso')
-                                                    <span
-                                                        class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 rounded-pill">En
-                                                        progreso</span>
+                                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 rounded-pill">En progreso</span>
                                                 @else
-                                                    <span
-                                                        class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">Resuelto</span>
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">Resuelto</span>
                                                 @endif
                                             </td>
                                         </tr>
@@ -243,6 +251,14 @@
                             </div>
                             <div class="modal-body p-4 text-start">
                                 
+                                <!-- Si fue rechazado antes, le mostramos el motivo aquí en el modal también -->
+                                @if ($expense->rejection_note)
+                                    <div class="alert alert-danger rounded-3 mb-4">
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> <strong>Tu comprobante anterior fue rechazado:</strong><br>
+                                        {{ $expense->rejection_note }}
+                                    </div>
+                                @endif
+
                                 <!-- Datos de Transferencia con Botón Único de Copiar -->
                                 <div class="alert alert-secondary rounded-3 mb-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -267,7 +283,7 @@
                                 </div>
 
                                 <div class="mb-3 mt-4">
-                                    <label class="form-label fw-bold text-dark">Adjuntar Comprobante (Boucher):</label>
+                                    <label class="form-label fw-bold text-dark">Adjuntar Nuevo Comprobante:</label>
                                     <input type="file" class="form-control" name="receipt" accept=".jpg,.jpeg,.png,.pdf" required>
                                     <div class="form-text">Formatos aceptados: JPG, PNG o PDF. Max: 2MB.</div>
                                 </div>
@@ -298,8 +314,7 @@
                     @csrf
                     <div class="modal-body p-4">
                         <div class="mb-3">
-                            <label for="title" class="form-label fw-bold text-dark">Descripción del Problema /
-                                Asunto:</label>
+                            <label for="title" class="form-label fw-bold text-dark">Descripción del Problema / Asunto:</label>
                             <input type="text" name="title" id="title" class="form-control rounded-3"
                                 placeholder="Ej: Fuga de agua en el baño principal" required>
                         </div>
@@ -335,19 +350,15 @@
     <!-- SCRIPT PARA COPIAR TODOS LOS DATOS -->
     <script>
         function copyAllData(monto, buttonElement) {
-            // Preparamos el bloque de texto exacto que se copiará
             const textToCopy = `Datos de Transferencia:\nBanco: BancoEstado\nCuenta Corriente: 123456789\nRUT: 70.123.456-7\nCorreo: pagos@santamaria.cl\nMonto: $${monto}`;
             
             navigator.clipboard.writeText(textToCopy).then(function() {
-                // Guarda el estado original del botón
                 let originalHTML = buttonElement.innerHTML;
                 
-                // Cambia a un mensaje de éxito
                 buttonElement.innerHTML = '<i class="bi bi-check2 text-success me-1"></i> ¡Copiado!';
                 buttonElement.classList.replace('btn-light', 'btn-success');
                 buttonElement.classList.replace('text-dark', 'text-white');
                 
-                // Regresa a la normalidad después de 2 segundos
                 setTimeout(function() {
                     buttonElement.innerHTML = originalHTML;
                     buttonElement.classList.replace('btn-success', 'btn-light');

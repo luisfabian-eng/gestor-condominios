@@ -17,7 +17,8 @@ class CommonExpense extends Model
         'concept',
         'due_date',
         'status',
-        'receipt_path', // <-- ¡Aquí está el campo agregado!
+        'receipt_path',
+        'rejection_note', // <-- ¡Agregado para permitir guardar el motivo del rechazo!
     ];
 
     public function unit()

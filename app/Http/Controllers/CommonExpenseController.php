@@ -10,39 +10,34 @@ class CommonExpenseController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Años disponibles para el filtro
         $availableYears = CommonExpense::select('year')
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year');
 
-        // Periodo seleccionado (por defecto el actual)
         $selectedYear = $request->get('year', date('Y'));
-        $selectedMonth = $request->get('month', 'Agosto');
+        // Por defecto mostrará "Todos" si no se ha seleccionado nada
+        $selectedMonth = $request->get('month', 'Todos'); 
 
-        // 2. Consulta con filtro de Año y Mes
         $query = CommonExpense::with(['unit.condominium', 'unit.resident'])
-            ->where('year', $selectedYear)
-            ->where('month', $selectedMonth);
+            ->where('year', $selectedYear);
+
+        // Si el mes no es "Todos", aplicamos el filtro del mes
+        if ($selectedMonth !== 'Todos') {
+            $query->where('month', $selectedMonth);
+        }
 
         $expenses = $query->get();
 
-        // 3. Conteos y Totales para el resumen
         $pendingCount  = $expenses->where('status', 'Pendiente')->count();
         $pendingAmount = $expenses->where('status', 'Pendiente')->sum('amount');
-
-        $paidCount  = $expenses->where('status', 'Pagado')->count();
-        $paidAmount = $expenses->where('status', 'Pagado')->sum('amount');
+        $reviewCount   = $expenses->where('status', 'En revisión')->count();
+        $paidCount     = $expenses->where('status', 'Pagado')->count();
+        $paidAmount    = $expenses->where('status', 'Pagado')->sum('amount');
 
         return view('common_expenses.index', compact(
-            'expenses',
-            'availableYears',
-            'selectedYear',
-            'selectedMonth',
-            'pendingCount',
-            'pendingAmount',
-            'paidCount',
-            'paidAmount'
+            'expenses', 'availableYears', 'selectedYear', 'selectedMonth',
+            'pendingCount', 'pendingAmount', 'reviewCount', 'paidCount', 'paidAmount'
         ));
     }
 
@@ -73,8 +68,7 @@ class CommonExpenseController extends Controller
             'status'   => 'Pendiente',
         ]);
 
-        return redirect()->route('common_expenses.index')
-            ->with('status', '¡Cobro registrado exitosamente!');
+        return redirect()->route('common_expenses.index')->with('status', '¡Cobro registrado exitosamente!');
     }
 
     public function show(string $id) {}
@@ -83,7 +77,22 @@ class CommonExpenseController extends Controller
     {
         $expense = CommonExpense::findOrFail($id);
         $expense->update(['status' => 'Pagado']);
-        return redirect()->back()->with('status', '¡Pago registrado correctamente!');
+        return redirect()->back()->with('status', '¡Pago registrado y aprobado correctamente!');
+    }
+
+    public function rejectPayment(Request $request, string $id)
+    {
+        $request->validate([
+            'rejection_note' => 'required|string|max:500',
+        ]);
+
+        $expense = CommonExpense::findOrFail($id);
+        $expense->update([
+            'status'         => 'Pendiente',
+            'rejection_note' => $request->rejection_note,
+        ]);
+
+        return redirect()->back()->with('status', 'El comprobante fue rechazado y la observación se envió al residente.');
     }
 
     public function edit(string $id)
@@ -97,13 +106,14 @@ class CommonExpenseController extends Controller
     {
         $expense = CommonExpense::findOrFail($id);
 
-        // Si la petición proviene del botón rápido "Pagar" desde la tabla
         if ($request->has('payment_action')) {
-            $expense->update(['status' => 'Pagado']);
+            $expense->update([
+                'status'         => 'Pagado',
+                'rejection_note' => null,
+            ]);
             return redirect()->back()->with('status', '¡El gasto común fue marcado como PAGADO correctamente!');
         }
 
-        // Validación normal si se guarda desde la vista de edición
         $request->validate([
             'unit_id'  => 'required|exists:units,id',
             'month'    => 'required|string|max:20',
@@ -114,18 +124,14 @@ class CommonExpenseController extends Controller
         ]);
 
         $expense->update($request->all());
-
-        return redirect()->route('common_expenses.index')
-            ->with('status', '¡Cobro actualizado exitosamente!');
+        return redirect()->route('common_expenses.index')->with('status', '¡Cobro actualizado exitosamente!');
     }
 
     public function destroy(string $id)
     {
         $expense = CommonExpense::findOrFail($id);
         $expense->delete();
-
-        return redirect()->route('common_expenses.index')
-            ->with('status', '¡Cobro eliminado correctamente!');
+        return redirect()->route('common_expenses.index')->with('status', '¡Cobro eliminado correctamente!');
     }
 
     public function storeBulk(Request $request)
@@ -139,7 +145,6 @@ class CommonExpenseController extends Controller
         ]);
 
         $units = Unit::all();
-
         foreach ($units as $unit) {
             CommonExpense::create([
                 'unit_id'  => $unit->id,
@@ -152,7 +157,6 @@ class CommonExpenseController extends Controller
             ]);
         }
 
-        return redirect()->route('common_expenses.index')
-            ->with('status', '¡Gastos comunes emitidos exitosamente a ' . $units->count() . ' unidades!');
+        return redirect()->route('common_expenses.index')->with('status', '¡Gastos comunes emitidos exitosamente a ' . $units->count() . ' unidades!');
     }
 }
