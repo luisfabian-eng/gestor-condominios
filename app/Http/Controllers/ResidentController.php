@@ -63,21 +63,36 @@ class ResidentController extends Controller
     }
 
     public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'unit_id' => 'required|exists:units,id',
-            'name' => 'required|string|max:255',
-            'rut' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
+{
+    $resident = Resident::findOrFail($id);
+
+    // Buscamos el usuario asociado a este residente
+    $user = User::where('resident_id', $resident->id)
+        ->orWhere('email', $resident->email)
+        ->first();
+
+    $request->validate([
+        'unit_id' => 'required|exists:units,id',
+        'name'    => 'required|string|max:255',
+        'rut'     => 'nullable|string|max:20',
+        'email'   => 'required|email|max:255|unique:users,email,' . ($user ? $user->id : 'NULL'),
+        'phone'   => 'nullable|string|max:20',
+    ]);
+
+    // 1. Actualizamos los datos del residente
+    $resident->update($request->all());
+
+    // 2. Sincronizamos el nombre y correo del usuario para su inicio de sesión
+    if ($user) {
+        $user->update([
+            'name'  => $request->name,
+            'email' => $request->email,
         ]);
-
-        $resident = Resident::findOrFail($id);
-        $resident->update($request->all());
-
-        return redirect()->route('residents.index')
-            ->with('status', '¡Datos del residente actualizados!');
     }
+
+    return redirect()->route('residents.index')
+        ->with('status', '¡Datos del residente y cuenta actualizados exitosamente!');
+}
 
     public function destroy(string $id)
     {
