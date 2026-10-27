@@ -71,4 +71,26 @@ class HomeController extends Controller
 
         return redirect()->route('home')->with('status', '¡Tu requerimiento fue enviado correctamente!');
     }
+
+    public function uploadPayment(Request $request, $id)
+{
+    // Validamos que suba un archivo válido (Imagen o PDF, máx 2MB)
+    $request->validate([
+        'receipt' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+    ]);
+
+    $expense = \App\Models\CommonExpense::findOrFail($id);
+
+    // Guardamos el archivo y actualizamos el estado
+    if ($request->hasFile('receipt')) {
+        $path = $request->file('receipt')->store('receipts', 'public');
+
+        $expense->update([
+            'receipt_path' => $path,
+            'status' => 'En revisión' // Cambia el estado para que el admin lo revise
+        ]);
+    }
+
+    return redirect()->route('home')->with('status', '¡Comprobante enviado! El administrador lo revisará pronto.');
+}
 }

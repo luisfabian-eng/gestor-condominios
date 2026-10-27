@@ -33,7 +33,9 @@
                                 <tbody>
                                     @foreach ($residents as $resident)
                                         <tr>
-                                            <td class="fw-bold">{{ $resident->name }}</td>
+                                            <td class="fw-bold">
+                                                <i class="bi bi-person-circle text-primary me-1"></i> {{ $resident->name }}
+                                            </td>
                                             <td>{{ $resident->rut ?? 'No registrado' }}</td>
                                             <td>
                                                 <div><i class="bi bi-envelope text-muted me-1"></i>
@@ -42,10 +44,13 @@
                                                     {{ $resident->phone ?? '-' }}</div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-secondary">
-                                                    {{ $resident->unit->number ?? 'N/A' }}
-                                                    {{ optional($resident->unit)->tower ? '- Torre ' . $resident->unit->tower : '' }}
-                                                </span>
+                                                <div>
+                                                    <span class="fw-bold">Depto {{ $resident->unit->number ?? 'N/A' }}</span>
+                                                    @if (optional($resident->unit)->tower)
+                                                        <!-- AQUI ESTÁ LA SOLUCIÓN ADAPTATIVA -->
+                                                        <span class="badge border border-secondary text-secondary ms-1">Torre {{ $resident->unit->tower }}</span>
+                                                    @endif
+                                                </div>
                                                 <div class="small text-muted mt-1">
                                                     {{ optional(optional($resident->unit)->condominium)->name ?? 'Sin comunidad' }}
                                                 </div>

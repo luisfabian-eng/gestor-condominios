@@ -17,8 +17,8 @@
                     <div class="card-body text-white position-relative overflow-hidden p-4">
                         <i class="bi bi-building position-absolute"
                             style="font-size: 6rem; opacity: 0.1; right: -10px; bottom: -20px;"></i>
-                        <h5 class="card-title fw-light mb-1 text-nowrap">Comunidades</h5>
-                        <h2 class="fs-2 fw-bold mb-0 text-nowrap">{{ $totalCondominiums ?? 0 }}</h2>
+                        <h5 class="card-title fw-light mb-1 text-nowrap text-white">Comunidades</h5>
+                        <h2 class="fs-2 fw-bold mb-0 text-nowrap text-white">{{ $totalCondominiums ?? 0 }}</h2>
                     </div>
                     <div class="card-footer bg-transparent border-top-0 pb-3 px-4">
                         <a href="{{ route('condominiums.index') }}" class="text-white text-decoration-none fw-medium"><i
@@ -34,8 +34,8 @@
                     <div class="card-body text-white position-relative overflow-hidden p-4">
                         <i class="bi bi-door-open position-absolute"
                             style="font-size: 6rem; opacity: 0.1; right: -10px; bottom: -20px;"></i>
-                        <h5 class="card-title fw-light mb-1 text-nowrap">Unidades</h5>
-                        <h2 class="fs-2 fw-bold mb-0 text-nowrap">{{ $totalUnits ?? 0 }}</h2>
+                        <h5 class="card-title fw-light mb-1 text-nowrap text-white">Unidades</h5>
+                        <h2 class="fs-2 fw-bold mb-0 text-nowrap text-white">{{ $totalUnits ?? 0 }}</h2>
                     </div>
                     <div class="card-footer bg-transparent border-top-0 pb-3 px-4">
                         <a href="{{ route('units.index') }}" class="text-white text-decoration-none fw-medium"><i
@@ -51,8 +51,8 @@
                     <div class="card-body text-white position-relative overflow-hidden p-4">
                         <i class="bi bi-exclamation-circle position-absolute"
                             style="font-size: 6rem; opacity: 0.1; right: -10px; bottom: -20px;"></i>
-                        <h5 class="card-title fw-light mb-1 text-nowrap">Por Cobrar</h5>
-                        <h2 class="fs-2 fw-bold mb-0 text-nowrap">$
+                        <h5 class="card-title fw-light mb-1 text-nowrap text-white">Por Cobrar</h5>
+                        <h2 class="fs-2 fw-bold mb-0 text-nowrap text-white">$
                             {{ isset($pendingAmount) ? number_format($pendingAmount, 0, ',', '.') : '0' }}</h2>
                     </div>
                     <div class="card-footer bg-transparent border-top-0 pb-3 px-4">
@@ -70,8 +70,8 @@
                     <div class="card-body text-white position-relative overflow-hidden p-4">
                         <i class="bi bi-check2-circle position-absolute"
                             style="font-size: 6rem; opacity: 0.1; right: -10px; bottom: -20px;"></i>
-                        <h5 class="card-title fw-light mb-1 text-nowrap">Recaudado</h5>
-                        <h2 class="fs-2 fw-bold mb-0 text-nowrap">$
+                        <h5 class="card-title fw-light mb-1 text-nowrap text-white">Recaudado</h5>
+                        <h2 class="fs-2 fw-bold mb-0 text-nowrap text-white">$
                             {{ isset($paidAmount) ? number_format($paidAmount, 0, ',', '.') : '0' }}</h2>
                     </div>
                     <div class="card-footer bg-transparent border-top-0 pb-3 px-4">

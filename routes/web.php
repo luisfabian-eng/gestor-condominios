@@ -65,4 +65,6 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(funct
     // Formulario de filtro de tickets desde el menú (por estado y fecha)
     Route::get('/reportes/tickets', [ReportController::class, 'ticketsReportForm'])->name('reports.tickets.form');
     Route::post('/reportes/tickets/filtrado/pdf', [ReportController::class, 'generateFilteredTicketsPdf'])->name('reports.tickets.filtered.pdf');
+    Route::post('/portal/gastos/{id}/pagar-manual', [App\Http\Controllers\HomeController::class, 'uploadPayment'])->name('portal.expenses.pay_manual');
+    
 });

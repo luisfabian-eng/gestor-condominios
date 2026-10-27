@@ -17,6 +17,7 @@ class CommonExpense extends Model
         'concept',
         'due_date',
         'status',
+        'receipt_path', // <-- ¡Aquí está el campo agregado!
     ];
 
     public function unit()
