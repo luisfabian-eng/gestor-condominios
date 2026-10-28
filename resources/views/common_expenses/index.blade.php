@@ -162,7 +162,8 @@
                                             @if ($expense->rejection_note)
                                                 <span class="badge bg-danger px-3 py-1"
                                                     title="Motivo: {{ $expense->rejection_note }}">Rechazado
-                                                    (Reenviar)</span>
+                                                    (Reenviar)
+                                                </span>
                                             @else
                                                 <span class="badge bg-danger px-3 py-1">Pendiente</span>
                                             @endif
@@ -173,57 +174,62 @@
                                         @endif
                                     </td>
 
-                                    <td class="pe-3 text-end">
-                                        <div class="d-inline-flex gap-1 align-items-center">
+                                    <td class="pe-3 text-end text-nowrap">
+                                        <div class="d-inline-flex gap-1 align-items-center justify-content-end">
 
-                                            <!-- Ver comprobante adjunto si existe -->
+                                            <!-- Comprobante (Ícono limpio del mismo tamaño que editar/borrar) -->
                                             @if ($expense->receipt_path)
                                                 <a href="{{ asset('uploads/receipts/' . $expense->receipt_path) }}"
-                                                    target="_blank" class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-file-earmark-arrow-down me-1"></i> Ver Comprobante
+                                                    target="_blank" class="btn btn-sm btn-outline-primary"
+                                                    title="Ver comprobante de pago">
+                                                    <i class="bi bi-file-earmark-arrow-down"></i>
                                                 </a>
-                                            @else
-                                                <span class="text-muted small">Sin comprobante</span>
                                             @endif
 
-                                            <!-- Botones Aprobar y Rechazar -->
+                                            <!-- Acciones si no está Pagado -->
                                             @if ($expense->status != 'Pagado')
-                                                <!-- Botón Aprobar -->
+                                                <!-- Aprobar / Pagar -->
                                                 <form action="{{ route('common_expenses.update', $expense->id) }}"
-                                                    method="POST" class="m-0">
+                                                    method="POST" class="m-0 d-inline">
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden" name="payment_action" value="1">
-                                                    <button type="submit" class="btn btn-sm btn-success"
-                                                        title="Aprobar y marcar como Pagado">
-                                                        <i class="bi bi-check-lg me-1"></i>
-                                                        {{ $expense->status == 'En revisión' ? 'Aprobar' : 'Pagar' }}
+                                                    <button type="submit" class="btn btn-sm btn-success px-2 py-1"
+                                                        title="{{ $expense->status == 'En revisión' ? 'Aprobar comprobante' : 'Marcar como Pagado' }}">
+                                                        <i
+                                                            class="bi bi-check-lg me-1"></i>{{ $expense->status == 'En revisión' ? 'Aprobar' : 'Pagar' }}
                                                     </button>
                                                 </form>
 
-                                                <!-- Botón Rechazar (Abre el Modal que está al final del archivo) -->
-                                                <button type="button" class="btn btn-sm btn-outline-danger"
-                                                    data-bs-toggle="modal" data-bs-target="#rejectModal{{ $expense->id }}"
-                                                    title="Rechazar comprobante">
-                                                    <i class="bi bi-x-lg"></i> Rechazar
-                                                </button>
+                                                <!-- Rechazar (solo si está En revisión o tiene comprobante) -->
+                                                @if ($expense->status == 'En revisión' || $expense->receipt_path)
+                                                    <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#rejectModal{{ $expense->id }}"
+                                                        title="Rechazar comprobante">
+                                                        <i class="bi bi-x-lg me-1"></i>Rechazar
+                                                    </button>
+                                                @endif
                                             @endif
 
+                                            <!-- Editar -->
                                             <a href="{{ route('common_expenses.edit', $expense->id) }}"
-                                                class="btn btn-sm btn-outline-primary" title="Editar">
+                                                class="btn btn-sm btn-outline-primary" title="Editar cobro">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
 
+                                            <!-- Eliminar -->
                                             <form action="{{ route('common_expenses.destroy', $expense->id) }}"
-                                                method="POST" class="m-0"
+                                                method="POST" class="m-0 d-inline"
                                                 onsubmit="return confirm('¿Estás seguro de eliminar este cobro?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    title="Borrar">
+                                                    title="Eliminar cobro">
                                                     <i class="bi bi-trash3"></i>
                                                 </button>
                                             </form>
+
                                         </div>
                                     </td>
                                 </tr>
