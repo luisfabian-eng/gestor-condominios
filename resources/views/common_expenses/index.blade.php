@@ -41,11 +41,22 @@
                         <label for="month" class="form-label fw-bold small text-muted mb-1">MES DE EMISIÓN</label>
                         <select name="month" id="month" class="form-select" onchange="this.form.submit()">
                             <!-- OPCIÓN TODOS AGREGADA AQUÍ -->
-                            <option value="Todos" {{ $selectedMonth == 'Todos' ? 'selected' : '' }}>Todos los meses</option>
+                            <option value="Todos" {{ $selectedMonth == 'Todos' ? 'selected' : '' }}>Todos los meses
+                            </option>
                             @php
                                 $months = [
-                                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+                                    'Enero',
+                                    'Febrero',
+                                    'Marzo',
+                                    'Abril',
+                                    'Mayo',
+                                    'Junio',
+                                    'Julio',
+                                    'Agosto',
+                                    'Septiembre',
+                                    'Octubre',
+                                    'Noviembre',
+                                    'Diciembre',
                                 ];
                             @endphp
                             @foreach ($months as $m)
@@ -72,7 +83,8 @@
                 <div>
                     <h5 class="fw-bold text-dark mb-0">Detalle de Cobros</h5>
                     <!-- TEXTO ACTUALIZADO PARA MOSTRAR "TODO EL AÑO" -->
-                    <span class="text-muted small">Periodo seleccionado: {{ $selectedMonth == 'Todos' ? 'Todo el año' : $selectedMonth }} {{ $selectedYear }}</span>
+                    <span class="text-muted small">Periodo seleccionado:
+                        {{ $selectedMonth == 'Todos' ? 'Todo el año' : $selectedMonth }} {{ $selectedYear }}</span>
                 </div>
 
                 <!-- RESUMEN EN PILLS DISCRETAS -->
@@ -143,12 +155,14 @@
                                     <td>{{ $expense->month }} {{ $expense->year }}</td>
                                     <td class="fw-bold text-dark">$ {{ number_format($expense->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($expense->due_date)->format('d-m-Y') }}</td>
-                                    
+
                                     <!-- COLUMNA DE ESTADO CON ETIQUETA DE RECHAZO -->
                                     <td>
                                         @if ($expense->status == 'Pendiente')
                                             @if ($expense->rejection_note)
-                                                <span class="badge bg-danger px-3 py-1" title="Motivo: {{ $expense->rejection_note }}">Rechazado (Reenviar)</span>
+                                                <span class="badge bg-danger px-3 py-1"
+                                                    title="Motivo: {{ $expense->rejection_note }}">Rechazado
+                                                    (Reenviar)</span>
                                             @else
                                                 <span class="badge bg-danger px-3 py-1">Pendiente</span>
                                             @endif
@@ -158,45 +172,55 @@
                                             <span class="badge bg-success px-3 py-1">Pagado</span>
                                         @endif
                                     </td>
-                                    
+
                                     <td class="pe-3 text-end">
                                         <div class="d-inline-flex gap-1 align-items-center">
-                                            
+
                                             <!-- Ver comprobante adjunto si existe -->
                                             @if ($expense->receipt_path)
-                                                <a href="{{ asset('storage/' . $expense->receipt_path) }}" target="_blank"
-                                                    class="btn btn-sm btn-outline-info" title="Ver Comprobante Adjunto">
-                                                    <i class="bi bi-file-earmark-text"></i>
+                                                <a href="{{ asset('uploads/receipts/' . $expense->receipt_path) }}"
+                                                    target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-file-earmark-arrow-down me-1"></i> Ver Comprobante
                                                 </a>
+                                            @else
+                                                <span class="text-muted small">Sin comprobante</span>
                                             @endif
 
                                             <!-- Botones Aprobar y Rechazar -->
                                             @if ($expense->status != 'Pagado')
                                                 <!-- Botón Aprobar -->
-                                                <form action="{{ route('common_expenses.update', $expense->id) }}" method="POST" class="m-0">
+                                                <form action="{{ route('common_expenses.update', $expense->id) }}"
+                                                    method="POST" class="m-0">
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden" name="payment_action" value="1">
-                                                    <button type="submit" class="btn btn-sm btn-success" title="Aprobar y marcar como Pagado">
-                                                        <i class="bi bi-check-lg me-1"></i> {{ $expense->status == 'En revisión' ? 'Aprobar' : 'Pagar' }}
+                                                    <button type="submit" class="btn btn-sm btn-success"
+                                                        title="Aprobar y marcar como Pagado">
+                                                        <i class="bi bi-check-lg me-1"></i>
+                                                        {{ $expense->status == 'En revisión' ? 'Aprobar' : 'Pagar' }}
                                                     </button>
                                                 </form>
 
                                                 <!-- Botón Rechazar (Abre el Modal que está al final del archivo) -->
-                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $expense->id }}" title="Rechazar comprobante">
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                                    data-bs-toggle="modal" data-bs-target="#rejectModal{{ $expense->id }}"
+                                                    title="Rechazar comprobante">
                                                     <i class="bi bi-x-lg"></i> Rechazar
                                                 </button>
                                             @endif
 
-                                            <a href="{{ route('common_expenses.edit', $expense->id) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                            <a href="{{ route('common_expenses.edit', $expense->id) }}"
+                                                class="btn btn-sm btn-outline-primary" title="Editar">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
 
-                                            <form action="{{ route('common_expenses.destroy', $expense->id) }}" method="POST" class="m-0"
+                                            <form action="{{ route('common_expenses.destroy', $expense->id) }}"
+                                                method="POST" class="m-0"
                                                 onsubmit="return confirm('¿Estás seguro de eliminar este cobro?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Borrar">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    title="Borrar">
                                                     <i class="bi bi-trash3"></i>
                                                 </button>
                                             </form>
@@ -223,17 +247,21 @@
                                 <h5 class="modal-title fw-bold text-dark">
                                     <i class="bi bi-exclamation-triangle text-danger me-2"></i>Rechazar Comprobante
                                 </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-4">
                                 <div class="mb-3">
                                     <label class="form-label fw-bold text-dark">Indique el motivo del rechazo:</label>
-                                    <textarea name="rejection_note" class="form-control rounded-3" rows="3" placeholder="Ej: El monto transferido no coincide o el comprobante está borroso." required></textarea>
-                                    <div class="form-text">Esta nota le llegará directamente al residente en su portal.</div>
+                                    <textarea name="rejection_note" class="form-control rounded-3" rows="3"
+                                        placeholder="Ej: El monto transferido no coincide o el comprobante está borroso." required></textarea>
+                                    <div class="form-text">Esta nota le llegará directamente al residente en su portal.
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer border-top py-3 px-4">
-                                <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-outline-secondary rounded-3"
+                                    data-bs-dismiss="modal">Cancelar</button>
                                 <button type="submit" class="btn btn-danger px-4 rounded-3">Enviar Rechazo</button>
                             </div>
                         </form>
