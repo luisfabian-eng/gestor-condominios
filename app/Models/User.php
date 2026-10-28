@@ -33,4 +33,16 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Resident::class);
     }
+
+    // HELPER 1: Obtener directamente la Unidad/Depto asociada al usuario
+    public function getUnitAttribute()
+    {
+        return $this->resident ? $this->resident->unit : null;
+    }
+
+    // HELPER 2: Obtener directamente la Comunidad asociada al usuario
+    public function getCondominiumAttribute()
+    {
+        return ($this->resident && $this->resident->unit) ? $this->resident->unit->condominium : null;
+    }
 }

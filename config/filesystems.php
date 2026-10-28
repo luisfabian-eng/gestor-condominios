@@ -55,6 +55,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'public_direct' => [
+            'driver'     => 'local',
+            'root'       => public_path('uploads/receipts'),
+            'url'        => env('APP_URL') . '/uploads/receipts',
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

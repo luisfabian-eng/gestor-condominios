@@ -7,9 +7,14 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span class="fw-bold">Unidades / Departamentos</span>
-                        <a href="{{ route('units.create') }}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-plus-lg me-1"></i>Nueva Unidad
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('reports.units.pdf') }}" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Descargar PDF
+                            </a>
+                            <a href="{{ route('units.create') }}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-plus-lg me-1"></i> Nueva Unidad
+                            </a>
+                        </div>
                     </div>
 
                     <div class="card-body">
