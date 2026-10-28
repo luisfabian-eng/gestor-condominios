@@ -9,6 +9,7 @@ use App\Models\CommonExpense;
 use App\Models\Ticket;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Models\Announcement;
 
 class HomeController extends Controller
 {
@@ -24,22 +25,33 @@ class HomeController extends Controller
         if (auth()->user()->role === 'residente') {
             $resident = auth()->user()->resident;
 
-            // Buscamos sus gastos comunes
-            $expenses = collect(); // Colección vacía por defecto
+            $expenses = collect();
+            $condominiumId = null;
+
             if ($resident && $resident->unit_id) {
-                // Si tiene departamento, buscamos sus cobros ordenados por fecha de vencimiento
                 $expenses = CommonExpense::where('unit_id', $resident->unit_id)
                     ->orderBy('due_date', 'desc')
                     ->get();
+
+                $condominiumId = optional($resident->unit)->condominium_id;
             }
 
-            // Buscamos ÚNICAMENTE los tickets/requerimientos creados por este usuario
+            // Traer avisos activos de su condominio o globales
+            $announcements = Announcement::where('is_active', true)
+                ->when($condominiumId, function ($query) use ($condominiumId) {
+                    $query->where(function ($q) use ($condominiumId) {
+                        $q->where('condominium_id', $condominiumId)
+                        ->orWhereNull('condominium_id');
+                    });
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+
             $tickets = Ticket::where('user_id', auth()->id())
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // Enviamos $resident, $expenses y $tickets a la vista del portal
-            return view('portal', compact('resident', 'expenses', 'tickets'));
+            return view('portal', compact('resident', 'expenses', 'tickets', 'announcements'));
         }
 
         // 2. SI ES ADMIN, SIGUE CON LA LÓGICA NORMAL DEL PANEL

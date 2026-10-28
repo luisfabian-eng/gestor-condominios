@@ -312,6 +312,9 @@
                                         <li><a class="dropdown-item" href="{{ route('units.index') }}"><i
                                                     class="bi bi-door-open me-2 text-primary"></i> Unidades / Deptos</a>
                                         </li>
+                                        <li><a class="dropdown-item" href="{{ route('announcements.index') }}"><i
+                                                    class="bi bi-megaphone me-2 text-primary"></i> Muro de Avisos</a>
+                                        </li>
                                         <li>
                                             <hr class="dropdown-divider my-1">
                                         </li>

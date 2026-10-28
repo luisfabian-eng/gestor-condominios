@@ -1,9 +1,40 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        /* Estilo inactivo: texto gris oscuro sobrio */
+        .custom-portal-pills .nav-link {
+            color: #475569 !important;
+            background-color: transparent !important;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .custom-portal-pills .nav-link i {
+            color: #64748b !important;
+        }
+
+        /* Hover cuando no está seleccionado */
+        .custom-portal-pills .nav-link:hover:not(.active) {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+
+        /* ÚNICO BOTÓN ACTIVO: Fondo índigo oscuro y texto blanco puro */
+        .custom-portal-pills .nav-link.active {
+            background-color: #4338ca !important;
+            /* Índigo oscuro elegante */
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(67, 56, 202, 0.25);
+        }
+
+        .custom-portal-pills .nav-link.active i {
+            color: #ffffff !important;
+        }
+    </style>
     <div class="container pb-5">
 
-        <!-- BANNER TIPO HEROE / BIENVENIDA -->
+        <!-- BANNER HEROE / BIENVENIDA -->
         <div class="card border-0 shadow-sm rounded-4 mb-4 text-white overflow-hidden"
             style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
             <div class="card-body p-4 p-md-5">
@@ -15,12 +46,12 @@
                         </span>
                         <h1 class="fw-bold display-6 text-white mb-2">¡Hola, {{ Auth::user()->name }}!</h1>
                         <p class="text-white-50 mb-0 fs-6">
-                            Bienvenido a tu panel de gestión. Desde aquí puedes revisar el estado de tu cuenta y reportar
-                            cualquier requerimiento.
+                            Bienvenido a tu panel de gestión. Revisa avisos oficiales, el estado de tus gastos comunes y
+                            genera requerimientos.
                         </p>
                     </div>
 
-                    <!-- Ficha de la propiedad -->
+                    <!-- Ficha del departamento -->
                     <div class="col-lg-5">
                         @if ($resident && $resident->unit)
                             <div class="rounded-4 p-3 border"
@@ -59,7 +90,7 @@
             </div>
         </div>
 
-        <!-- Alertas de estado -->
+        <!-- Alertas de sesión -->
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert">
                 <i class="bi bi-check-circle-fill me-2 fs-5 align-middle"></i> {{ session('status') }}
@@ -67,26 +98,117 @@
             </div>
         @endif
 
-        <div class="row g-4">
+        <!-- CONTENEDOR CON TRES PESTAÑAS -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <!-- Barra de navegación con tabs -->
+            <div class="card-header bg-white border-bottom pt-3 px-4">
+                <!-- Barra de pestañas con estilo sobrio / índigo -->
+                <!-- Barra de pestañas -->
+                <ul class="nav nav-pills custom-portal-pills gap-2" id="residentTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill px-4 py-2 fw-semibold" id="tab-notices"
+                            data-bs-toggle="tab" data-bs-target="#content-notices" type="button" role="tab">
+                            <i class="bi bi-megaphone me-1"></i> Avisos y Circulares
+                            @if (isset($announcements) && $announcements->count() > 0)
+                                <span class="badge bg-danger rounded-pill ms-1">{{ $announcements->count() }}</span>
+                            @endif
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="tab-expenses" data-bs-toggle="tab"
+                            data-bs-target="#content-expenses" type="button" role="tab">
+                            <i class="bi bi-receipt-cutoff me-1"></i> Mis Gastos Comunes
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="tab-tickets" data-bs-toggle="tab"
+                            data-bs-target="#content-tickets" type="button" role="tab">
+                            <i class="bi bi-tools me-1"></i> Mis Incidencias
+                        </button>
+                    </li>
+                </ul>
+            </div>
 
-            <!-- TARJETA 1: MIS GASTOS COMUNES -->
-            <div class="col-12">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header py-3 px-4 border-0 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3"
-                        style="background: transparent;">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3 text-primary">
-                                <i class="bi bi-receipt-cutoff fs-4"></i>
+            <div class="card-body p-4">
+                <div class="tab-content" id="residentTabsContent">
+
+                    <!-- PESTAÑA 1: MURO DE AVISOS Y CIRCULARES -->
+                    <div class="tab-pane fade show active" id="content-notices" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="fw-bold mb-0 text-dark">Muro de Comunicados Oficiales</h5>
+                                <span class="text-muted small">Noticias, avisos de corte, asambleas y circulares de la
+                                    administración</span>
                             </div>
-                            <h5 class="fw-bold mb-0 text-dark">Mis Gastos Comunes</h5>
                         </div>
-                        <a href="{{ route('resident.payments.index') }}"
-                            class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                            <i class="bi bi-clock-history me-1"></i> Ver Historial de Pagos
-                        </a>
+
+                        <div class="row g-3">
+                            @forelse ($announcements ?? [] as $notice)
+                                <div class="col-12">
+                                    <div class="card border border-light-subtle rounded-4 p-3 shadow-sm hover-shadow">
+                                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                @if ($notice->priority == 'Urgente')
+                                                    <span class="badge bg-danger px-3 py-1 rounded-pill">
+                                                        <i class="bi bi-exclamation-octagon-fill me-1"></i> Urgente
+                                                    </span>
+                                                @elseif ($notice->priority == 'Alta')
+                                                    <span class="badge bg-warning text-dark px-3 py-1 rounded-pill">
+                                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Importante
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-3 py-1 rounded-pill">
+                                                        Informativo
+                                                    </span>
+                                                @endif
+                                                <h6 class="fw-bold text-dark mb-0">{{ $notice->title }}</h6>
+                                            </div>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>{{ $notice->created_at->format('d/m/Y') }}
+                                            </small>
+                                        </div>
+
+                                        <p class="text-secondary small mb-2 text-break">
+                                            {{ $notice->content }}
+                                        </p>
+
+                                        @if ($notice->attachment_path)
+                                            <div class="pt-2 border-top">
+                                                <a href="{{ asset($notice->attachment_path) }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                                    <i class="bi bi-file-earmark-pdf me-1"></i> Descargar Documento Adjunto
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="col-12 py-5 text-center text-muted">
+                                    <i class="bi bi-chat-square-text text-secondary opacity-50 display-4 d-block mb-2"></i>
+                                    <h6 class="fw-bold text-dark">No hay comunicados publicados</h6>
+                                    <p class="small mb-0">La administración aún no ha publicado ningún aviso reciente para
+                                        tu comunidad.</p>
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
 
-                    <div class="card-body px-4 pb-4 pt-0">
+                    <!-- PESTAÑA 2: MIS GASTOS COMUNES -->
+                    <div class="tab-pane fade" id="content-expenses" role="tabpanel">
+                        <div
+                            class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+                            <div>
+                                <h5 class="fw-bold mb-0 text-dark">Cobros y Estado de Cuenta</h5>
+                                <span class="text-muted small">Detalle mensual de gastos comunes e historial de
+                                    recaudación</span>
+                            </div>
+                            <a href="{{ route('resident.payments.index') }}"
+                                class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                <i class="bi bi-clock-history me-1"></i> Ver Historial de Pagos
+                            </a>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover align-middle w-100 mb-0 text-nowrap datatable">
                                 <thead class="table-light">
@@ -108,8 +230,6 @@
                                             </td>
                                             <td class="fw-bold fs-6">$ {{ number_format($expense->amount, 0, ',', '.') }}
                                             </td>
-
-                                            <!-- ESTADO -->
                                             <td>
                                                 @if ($expense->status == 'Pendiente')
                                                     @if ($expense->rejection_note)
@@ -133,7 +253,6 @@
                                                         class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">Pagado</span>
                                                 @endif
 
-                                                <!-- MOTIVO RECHAZO -->
                                                 @if ($expense->rejection_note && $expense->status != 'Pagado')
                                                     <div class="alert alert-danger p-2 small mt-2 mb-0 rounded-3 text-wrap"
                                                         style="max-width: 280px;">
@@ -142,11 +261,10 @@
                                                     </div>
                                                 @endif
                                             </td>
-
-                                            <!-- ACCIÓN -->
                                             <td class="pe-3 text-end">
                                                 @if ($expense->status == 'Pendiente')
-                                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3"
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-primary rounded-pill px-3"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#payModal{{ $expense->id }}">
                                                         <i class="bi bi-credit-card me-1"></i> Pagar
@@ -157,13 +275,13 @@
                                                             <a href="{{ asset('uploads/receipts/' . $expense->receipt_path) }}"
                                                                 target="_blank"
                                                                 class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1"
-                                                                title="Ver mi comprobante">
+                                                                title="Ver comprobante adjunto">
                                                                 <i class="bi bi-file-earmark-check"></i>
                                                             </a>
                                                         @endif
-                                                        <span class="text-warning small fw-bold"><i
-                                                                class="bi bi-hourglass-split me-1"></i> Esperando
-                                                            revisión</span>
+                                                        <span class="text-warning small fw-bold">
+                                                            <i class="bi bi-hourglass-split me-1"></i> Esperando revisión
+                                                        </span>
                                                     </div>
                                                 @else
                                                     <div class="d-inline-flex align-items-center gap-2">
@@ -175,8 +293,9 @@
                                                                 <i class="bi bi-file-earmark-check"></i>
                                                             </a>
                                                         @endif
-                                                        <span class="text-success small fw-semibold"><i
-                                                                class="bi bi-check-circle-fill me-1"></i> Al día</span>
+                                                        <span class="text-success small fw-semibold">
+                                                            <i class="bi bi-check-circle-fill me-1"></i> Al día
+                                                        </span>
                                                     </div>
                                                 @endif
                                             </td>
@@ -195,36 +314,28 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- TARJETA 2: MIS REQUERIMIENTOS E INCIDENCIAS -->
-            <div class="col-12">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header py-3 px-4 border-0 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3"
-                        style="background: transparent;">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-warning bg-opacity-10 p-2 me-3 text-warning">
-                                <i class="bi bi-tools fs-4"></i>
-                            </div>
+                    <!-- PESTAÑA 3: MIS REQUERIMIENTOS E INCIDENCIAS -->
+                    <div class="tab-pane fade" id="content-tickets" role="tabpanel">
+                        <div
+                            class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
                             <div>
                                 <h5 class="fw-bold mb-0 text-dark">Mis Requerimientos e Incidencias</h5>
-                                <span class="text-muted small">Historial de solicitudes de mantenimiento</span>
+                                <span class="text-muted small">Estado de las solicitudes de mantención creadas por
+                                    ti</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('resident.tickets.index') }}"
+                                    class="btn btn-outline-secondary rounded-pill px-3 py-2 btn-sm">
+                                    <i class="bi bi-list-task me-1"></i> Ver Todas
+                                </a>
+                                <button type="button" class="btn btn-primary rounded-pill px-3 py-2 shadow-sm btn-sm"
+                                    data-bs-toggle="modal" data-bs-target="#newTicketModal">
+                                    <i class="bi bi-plus-lg me-1"></i> Crear Requerimiento
+                                </button>
                             </div>
                         </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('resident.tickets.index') }}"
-                                class="btn btn-outline-secondary rounded-pill px-3 py-2 btn-sm">
-                                <i class="bi bi-list-task me-1"></i> Ver Todas
-                            </a>
-                            <button type="button" class="btn btn-primary rounded-pill px-3 py-2 shadow-sm btn-sm"
-                                data-bs-toggle="modal" data-bs-target="#newTicketModal">
-                                <i class="bi bi-plus-lg me-1"></i> Crear Requerimiento
-                            </button>
-                        </div>
-                    </div>
 
-                    <div class="card-body p-4 pt-2">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle w-100 mb-0 text-nowrap datatable">
                                 <thead class="table-light">
@@ -288,10 +399,11 @@
                             </table>
                         </div>
                     </div>
+
                 </div>
             </div>
-
         </div>
+
     </div>
 
     <!-- MODALES DE PAGO -->
@@ -311,7 +423,6 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-4 text-start">
-
                                 @if ($expense->rejection_note)
                                     <div class="alert alert-danger rounded-3 mb-4">
                                         <i class="bi bi-exclamation-triangle-fill me-1"></i> <strong>Tu comprobante
@@ -354,8 +465,9 @@
                                 <button type="button"
                                     class="btn btn-outline-secondary rounded-3 w-100 w-sm-auto mb-2 mb-sm-0"
                                     data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary rounded-3 w-100 w-sm-auto"><i
-                                        class="bi bi-send me-1"></i> Enviar Comprobante</button>
+                                <button type="submit" class="btn btn-primary rounded-3 w-100 w-sm-auto">
+                                    <i class="bi bi-send me-1"></i> Enviar Comprobante
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -414,7 +526,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT PARA COPIAR DATOS BANCARIOS -->
+    <!-- SCRIPT COPIAR DATOS BANCARIOS Y RECALCULAR DATATABLES EN TABS -->
     <script>
         function copyAllData(monto, buttonElement) {
             const textToCopy =
@@ -422,7 +534,6 @@
 
             navigator.clipboard.writeText(textToCopy).then(function() {
                 let originalHTML = buttonElement.innerHTML;
-
                 buttonElement.innerHTML = '<i class="bi bi-check2 text-success me-1"></i> ¡Copiado!';
                 buttonElement.classList.replace('btn-light', 'btn-success');
                 buttonElement.classList.replace('text-dark', 'text-white');
@@ -436,5 +547,18 @@
                 console.error('Error al intentar copiar: ', err);
             });
         }
+
+        // Ajusta las tablas de DataTables cuando el usuario cambia entre pestañas
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabElements = document.querySelectorAll('button[data-bs-toggle="tab"]');
+            tabElements.forEach(function(tabEl) {
+                tabEl.addEventListener('shown.bs.tab', function() {
+                    if (window.jQuery && $.fn.dataTable) {
+                        $($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive
+                            .recalc();
+                    }
+                });
+            });
+        });
     </script>
 @endsection

@@ -10,6 +10,7 @@ use App\Http\Controllers\CommonExpenseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AnnouncementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,8 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(funct
     Route::get('/mis-tickets', [ResidentController::class, 'myTickets'])->name('resident.tickets.index');
     Route::get('/mis-tickets/nuevo', [ResidentController::class, 'createTicket'])->name('resident.tickets.create');
     Route::post('/mis-tickets', [ResidentController::class, 'storeTicket'])->name('resident.tickets.store');
+
+    Route::resource('announcements', AnnouncementController::class);
 
     // Gastos Comunes y acciones de aprobación / rechazo
     Route::resource('common_expenses', CommonExpenseController::class);
