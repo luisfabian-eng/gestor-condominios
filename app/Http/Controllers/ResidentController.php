@@ -7,7 +7,8 @@ use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str; // <-- AGREGAMOS ESTA HERRAMIENTA DE LARAVEL
+use Illuminate\Support\Str;
+use App\Models\CommonExpense;
 
 class ResidentController extends Controller
 {
@@ -103,5 +104,26 @@ class ResidentController extends Controller
 
         return redirect()->route('residents.index')
             ->with('status', '¡Residente y cuenta eliminados correctamente!');
+    }
+
+    public function paymentHistory()
+    {
+        $resident = auth()->user()->resident;
+
+        if (!$resident || !$resident->unit_id) {
+            return redirect()->route('home')->with('error', 'No tienes un departamento o unidad asociada.');
+        }
+
+        // Obtenemos solo los cobros pagados de su departamento ordenados del más reciente al más antiguo
+        $paidExpenses = CommonExpense::where('unit_id', $resident->unit_id)
+            ->where('status', 'Pagado')
+            ->orderBy('year', 'desc')
+            ->orderBy('due_date', 'desc')
+            ->get();
+
+        // Total histórico pagado
+        $totalPaid = $paidExpenses->sum('amount');
+
+        return view('residents.payments.index', compact('resident', 'paidExpenses', 'totalPaid'));
     }
 }

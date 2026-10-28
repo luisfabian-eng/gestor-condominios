@@ -159,4 +159,6 @@ class CommonExpenseController extends Controller
 
         return redirect()->route('common_expenses.index')->with('status', '¡Gastos comunes emitidos exitosamente a ' . $units->count() . ' unidades!');
     }
+
+    
 }

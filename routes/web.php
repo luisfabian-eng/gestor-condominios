@@ -34,12 +34,18 @@ Route::post('/portal/gastos/{id}/pagar-manual', [HomeController::class, 'uploadP
 Route::middleware(['auth', \App\Http\Middleware\CheckAdmin::class])->group(function () {
     Route::resource('condominiums', CondominiumController::class);
     Route::resource('units', UnitController::class);
+
+    // Residentes
     Route::resource('residents', ResidentController::class);
+    Route::get('/mis-pagos', [ResidentController::class, 'paymentHistory'])->name('resident.payments.index');
+    Route::get('/mis-tickets', [ResidentController::class, 'myTickets'])->name('resident.tickets.index');
+    Route::get('/mis-tickets/nuevo', [ResidentController::class, 'createTicket'])->name('resident.tickets.create');
+    Route::post('/mis-tickets', [ResidentController::class, 'storeTicket'])->name('resident.tickets.store');
 
     // Gastos Comunes y acciones de aprobación / rechazo
     Route::resource('common_expenses', CommonExpenseController::class);
     Route::patch('common_expenses/{id}/pay', [CommonExpenseController::class, 'markAsPaid'])->name('common_expenses.pay');
-    Route::post('common_expenses/{id}/reject', [CommonExpenseController::class, 'rejectPayment'])->name('common_expenses.reject'); // <-- RUTA REGISTRADA AQUÍ
+    Route::post('common_expenses/{id}/reject', [CommonExpenseController::class, 'rejectPayment'])->name('common_expenses.reject'); 
     Route::post('/common-expenses/bulk', [CommonExpenseController::class, 'storeBulk'])->name('common_expenses.store_bulk');
 
     // Usuarios

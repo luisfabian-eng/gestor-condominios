@@ -45,10 +45,13 @@
                                             </td>
                                             <td>
                                                 <div>
-                                                    <span class="fw-bold">Depto {{ $resident->unit->number ?? 'N/A' }}</span>
+                                                    <span class="fw-bold">Depto
+                                                        {{ $resident->unit->number ?? 'N/A' }}</span>
                                                     @if (optional($resident->unit)->tower)
                                                         <!-- AQUI ESTÁ LA SOLUCIÓN ADAPTATIVA -->
-                                                        <span class="badge border border-secondary text-secondary ms-1">Torre {{ $resident->unit->tower }}</span>
+                                                        <span
+                                                            class="badge border border-secondary text-secondary ms-1">Torre
+                                                            {{ $resident->unit->tower }}</span>
                                                     @endif
                                                 </div>
                                                 <div class="small text-muted mt-1">

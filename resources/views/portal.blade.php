@@ -20,7 +20,7 @@
                         </p>
                     </div>
 
-                    <!-- Ficha de la propiedad con soporte universal para modo claro/oscuro -->
+                    <!-- Ficha de la propiedad -->
                     <div class="col-lg-5">
                         @if ($resident && $resident->unit)
                             <div class="rounded-4 p-3 border"
@@ -80,11 +80,15 @@
                             </div>
                             <h5 class="fw-bold mb-0 text-dark">Mis Gastos Comunes</h5>
                         </div>
+                        <a href="{{ route('resident.payments.index') }}"
+                            class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                            <i class="bi bi-clock-history me-1"></i> Ver Historial de Pagos
+                        </a>
                     </div>
 
                     <div class="card-body px-4 pb-4 pt-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100 mb-0 text-nowrap">
+                            <table class="table table-hover align-middle w-100 mb-0 text-nowrap datatable">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-3 border-0 py-3">Periodo</th>
@@ -104,54 +108,87 @@
                                             </td>
                                             <td class="fw-bold fs-6">$ {{ number_format($expense->amount, 0, ',', '.') }}
                                             </td>
-                                            
-                                            <!-- ESTADOS Y NOTA DE RECHAZO SI EXISTE -->
+
+                                            <!-- ESTADO -->
                                             <td>
                                                 @if ($expense->status == 'Pendiente')
                                                     @if ($expense->rejection_note)
-                                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">
-                                                            <i class="bi bi-exclamation-circle me-1"></i> Rechazado (Reenviar)
+                                                        <span
+                                                            class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">
+                                                            <i class="bi bi-exclamation-circle me-1"></i> Rechazado
+                                                            (Reenviar)
                                                         </span>
                                                     @else
-                                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">Por Pagar</span>
+                                                        <span
+                                                            class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">Por
+                                                            Pagar</span>
                                                     @endif
                                                 @elseif ($expense->status == 'En revisión')
-                                                    <span class="badge bg-warning-subtle text-warning px-3 py-2 rounded-pill border border-warning-subtle">
+                                                    <span
+                                                        class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill border border-warning-subtle">
                                                         <i class="bi bi-hourglass-split me-1"></i> En Revisión
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">Pagado</span>
+                                                    <span
+                                                        class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">Pagado</span>
                                                 @endif
 
-                                                <!-- ALERTA SI FUE RECHAZADO -->
+                                                <!-- MOTIVO RECHAZO -->
                                                 @if ($expense->rejection_note && $expense->status != 'Pagado')
-                                                    <div class="alert alert-danger p-2 small mt-2 mb-0 rounded-3 text-wrap" style="max-width: 280px;">
-                                                        <i class="bi bi-exclamation-octagon-fill me-1"></i> <strong>Motivo:</strong> {{ $expense->rejection_note }}
+                                                    <div class="alert alert-danger p-2 small mt-2 mb-0 rounded-3 text-wrap"
+                                                        style="max-width: 280px;">
+                                                        <i class="bi bi-exclamation-octagon-fill me-1"></i>
+                                                        <strong>Motivo:</strong> {{ $expense->rejection_note }}
                                                     </div>
                                                 @endif
                                             </td>
-                                            
-                                            <!-- ACCIÓN ACTUALIZADA -->
+
+                                            <!-- ACCIÓN -->
                                             <td class="pe-3 text-end">
                                                 @if ($expense->status == 'Pendiente')
-                                                    <!-- Botón que abre el Modal de Pago -->
-                                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#payModal{{ $expense->id }}">
+                                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#payModal{{ $expense->id }}">
                                                         <i class="bi bi-credit-card me-1"></i> Pagar
                                                     </button>
                                                 @elseif ($expense->status == 'En revisión')
-                                                    <span class="text-warning small fw-bold"><i class="bi bi-hourglass-split me-1"></i> Esperando aprobación</span>
+                                                    <div class="d-inline-flex align-items-center gap-2">
+                                                        @if ($expense->receipt_path)
+                                                            <a href="{{ asset('uploads/receipts/' . $expense->receipt_path) }}"
+                                                                target="_blank"
+                                                                class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1"
+                                                                title="Ver mi comprobante">
+                                                                <i class="bi bi-file-earmark-check"></i>
+                                                            </a>
+                                                        @endif
+                                                        <span class="text-warning small fw-bold"><i
+                                                                class="bi bi-hourglass-split me-1"></i> Esperando
+                                                            revisión</span>
+                                                    </div>
                                                 @else
-                                                    <span class="text-success small fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Al día</span>
+                                                    <div class="d-inline-flex align-items-center gap-2">
+                                                        @if ($expense->receipt_path)
+                                                            <a href="{{ asset('uploads/receipts/' . $expense->receipt_path) }}"
+                                                                target="_blank"
+                                                                class="btn btn-sm btn-outline-success rounded-pill px-2 py-1"
+                                                                title="Ver comprobante pagado">
+                                                                <i class="bi bi-file-earmark-check"></i>
+                                                            </a>
+                                                        @endif
+                                                        <span class="text-success small fw-semibold"><i
+                                                                class="bi bi-check-circle-fill me-1"></i> Al día</span>
+                                                    </div>
                                                 @endif
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-5">
-                                                <i class="bi bi-check2-circle text-success fs-1 d-block mb-2 opacity-75"></i>
-                                                <h6 class="fw-bold text-dark mb-1">¡Estás al día con tus pagos!</h6>
-                                                <p class="text-muted small mb-0 text-wrap">No registras cobros pendientes en este momento.</p>
-                                            </td>
+                                            <td class="ps-3 py-4 text-center text-muted">¡Excelente! Estás al día con tus
+                                                cobros.</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -175,10 +212,16 @@
                                 <span class="text-muted small">Historial de solicitudes de mantenimiento</span>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm w-100 w-sm-auto"
-                            data-bs-toggle="modal" data-bs-target="#newTicketModal">
-                            <i class="bi bi-plus-lg me-1"></i> Crear Requerimiento
-                        </button>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('resident.tickets.index') }}"
+                                class="btn btn-outline-secondary rounded-pill px-3 py-2 btn-sm">
+                                <i class="bi bi-list-task me-1"></i> Ver Todas
+                            </a>
+                            <button type="button" class="btn btn-primary rounded-pill px-3 py-2 shadow-sm btn-sm"
+                                data-bs-toggle="modal" data-bs-target="#newTicketModal">
+                                <i class="bi bi-plus-lg me-1"></i> Crear Requerimiento
+                            </button>
+                        </div>
                     </div>
 
                     <div class="card-body p-4 pt-2">
@@ -195,7 +238,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($tickets as $ticket)
+                                    @forelse ($tickets as $ticket)
                                         <tr>
                                             <td class="ps-3 fw-bold text-muted">#{{ $ticket->id }}</td>
                                             <td class="fw-bold text-dark">{{ $ticket->title }}</td>
@@ -209,22 +252,38 @@
                                                 @if ($ticket->urgency == 'Alta')
                                                     <span class="badge bg-danger px-3 py-1 rounded-pill">Alta</span>
                                                 @elseif($ticket->urgency == 'Media')
-                                                    <span class="badge bg-warning text-dark px-3 py-1 rounded-pill">Media</span>
+                                                    <span
+                                                        class="badge bg-warning text-dark px-3 py-1 rounded-pill">Media</span>
                                                 @else
-                                                    <span class="badge bg-info text-dark px-3 py-1 rounded-pill">Baja</span>
+                                                    <span
+                                                        class="badge bg-info text-dark px-3 py-1 rounded-pill">Baja</span>
                                                 @endif
                                             </td>
                                             <td class="pe-3">
                                                 @if ($ticket->status == 'Abierto')
-                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill">Abierto</span>
+                                                    <span
+                                                        class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill">Abierto</span>
                                                 @elseif($ticket->status == 'En progreso')
-                                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 rounded-pill">En progreso</span>
+                                                    <span
+                                                        class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 rounded-pill">En
+                                                        progreso</span>
                                                 @else
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">Resuelto</span>
+                                                    <span
+                                                        class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">Resuelto</span>
                                                 @endif
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td class="ps-3 py-4 text-center text-muted">No has generado ningún
+                                                requerimiento aún.</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -235,36 +294,37 @@
         </div>
     </div>
 
-    <!-- MODALES DE PAGO (FUERA DE LA TABLA) -->
+    <!-- MODALES DE PAGO -->
     @foreach ($expenses as $expense)
         @if ($expense->status == 'Pendiente')
             <div class="modal fade text-start" id="payModal{{ $expense->id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content rounded-4 border-0 shadow">
-                        <form action="{{ route('portal.expenses.pay_manual', $expense->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('portal.expenses.pay_manual', $expense->id) }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header border-bottom py-3 px-4">
                                 <h5 class="modal-title fw-bold text-dark">
                                     <i class="bi bi-bank2 text-primary me-2"></i>Pago de Gasto Común
                                 </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-4 text-start">
-                                
-                                <!-- Si fue rechazado antes, le mostramos el motivo aquí en el modal también -->
+
                                 @if ($expense->rejection_note)
                                     <div class="alert alert-danger rounded-3 mb-4">
-                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> <strong>Tu comprobante anterior fue rechazado:</strong><br>
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> <strong>Tu comprobante
+                                            anterior fue rechazado:</strong><br>
                                         {{ $expense->rejection_note }}
                                     </div>
                                 @endif
 
-                                <!-- Datos de Transferencia con Botón Único de Copiar -->
                                 <div class="alert alert-secondary rounded-3 mb-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h6 class="fw-bold mb-0">Datos para Transferencia:</h6>
-                                        <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-3" 
-                                            onclick="copyAllData('{{ number_format($expense->amount, 0, '', '') }}', this)" 
+                                        <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-3"
+                                            onclick="copyAllData('{{ number_format($expense->amount, 0, '', '') }}', this)"
                                             title="Copiar todos los datos">
                                             <i class="bi bi-clipboard me-1"></i> Copiar
                                         </button>
@@ -276,21 +336,26 @@
                                         <li><strong>Correo:</strong> pagos@santamaria.cl</li>
                                     </ul>
                                 </div>
-                                
+
                                 <div class="mb-3">
                                     <label class="form-label fw-bold text-dark">Monto a Transferir:</label>
-                                    <input type="text" class="form-control fw-bold text-success" value="$ {{ number_format($expense->amount, 0, ',', '.') }}" readonly>
+                                    <input type="text" class="form-control fw-bold text-success"
+                                        value="$ {{ number_format($expense->amount, 0, ',', '.') }}" readonly>
                                 </div>
 
                                 <div class="mb-3 mt-4">
-                                    <label class="form-label fw-bold text-dark">Adjuntar Nuevo Comprobante:</label>
-                                    <input type="file" class="form-control" name="receipt" accept=".jpg,.jpeg,.png,.pdf" required>
-                                    <div class="form-text">Formatos aceptados: JPG, PNG o PDF. Max: 2MB.</div>
+                                    <label class="form-label fw-bold text-dark">Adjuntar Comprobante:</label>
+                                    <input type="file" class="form-control" name="receipt"
+                                        accept=".jpg,.jpeg,.png,.pdf" required>
+                                    <div class="form-text">Formatos aceptados: JPG, PNG o PDF. Max: 20MB.</div>
                                 </div>
                             </div>
                             <div class="modal-footer border-top py-3 px-4 flex-column flex-sm-row">
-                                <button type="button" class="btn btn-outline-secondary rounded-3 w-100 w-sm-auto mb-2 mb-sm-0" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary rounded-3 w-100 w-sm-auto"><i class="bi bi-send me-1"></i> Enviar Comprobante</button>
+                                <button type="button"
+                                    class="btn btn-outline-secondary rounded-3 w-100 w-sm-auto mb-2 mb-sm-0"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary rounded-3 w-100 w-sm-auto"><i
+                                        class="bi bi-send me-1"></i> Enviar Comprobante</button>
                             </div>
                         </form>
                     </div>
@@ -310,11 +375,12 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('portal.tickets.store') }}" method="POST">
+                <form action="{{ route('resident.tickets.store') }}" method="POST">
                     @csrf
                     <div class="modal-body p-4">
                         <div class="mb-3">
-                            <label for="title" class="form-label fw-bold text-dark">Descripción del Problema / Asunto:</label>
+                            <label for="title" class="form-label fw-bold text-dark">Descripción del Problema /
+                                Asunto:</label>
                             <input type="text" name="title" id="title" class="form-control rounded-3"
                                 placeholder="Ej: Fuga de agua en el baño principal" required>
                         </div>
@@ -335,7 +401,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer py-3 border-top px-4 flex-column flex-sm-row" style="background: transparent;">
+                    <div class="modal-footer py-3 border-top px-4 flex-column flex-sm-row"
+                        style="background: transparent;">
                         <button type="button" class="btn btn-outline-secondary rounded-3 w-100 w-sm-auto mb-2 mb-sm-0"
                             data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary rounded-3 w-100 w-sm-auto">
@@ -347,18 +414,19 @@
         </div>
     </div>
 
-    <!-- SCRIPT PARA COPIAR TODOS LOS DATOS -->
+    <!-- SCRIPT PARA COPIAR DATOS BANCARIOS -->
     <script>
         function copyAllData(monto, buttonElement) {
-            const textToCopy = `Datos de Transferencia:\nBanco: BancoEstado\nCuenta Corriente: 123456789\nRUT: 70.123.456-7\nCorreo: pagos@santamaria.cl\nMonto: $${monto}`;
-            
+            const textToCopy =
+                `Datos de Transferencia:\nBanco: BancoEstado\nCuenta Corriente: 123456789\nRUT: 70.123.456-7\nCorreo: pagos@santamaria.cl\nMonto: $${monto}`;
+
             navigator.clipboard.writeText(textToCopy).then(function() {
                 let originalHTML = buttonElement.innerHTML;
-                
+
                 buttonElement.innerHTML = '<i class="bi bi-check2 text-success me-1"></i> ¡Copiado!';
                 buttonElement.classList.replace('btn-light', 'btn-success');
                 buttonElement.classList.replace('text-dark', 'text-white');
-                
+
                 setTimeout(function() {
                     buttonElement.innerHTML = originalHTML;
                     buttonElement.classList.replace('btn-success', 'btn-light');
